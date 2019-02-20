@@ -5,9 +5,9 @@ require "civo_cli/version"
 
 Gem::Specification.new do |spec|
   spec.name          = "civo_cli"
-  spec.version       = CivoCli::VERSION
-  spec.authors       = ["Andy Jeffries"]
-  spec.email         = ["andy@absolutedevops.io"]
+  spec.version       = CivoCLI::VERSION
+  spec.authors       = ["Andy Jeffries", "Absolute Devops Ltd"]
+  spec.email         = ["andy@absolutedevops.io", "hello@civo.com"]
 
   spec.summary       = %q{CLI for interacting with Civo.com}
   spec.description   = %q{The official command line client for interacting with Civo's API}
@@ -39,4 +39,12 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "bundler", "~> 1.17"
   spec.add_development_dependency "rake", "~> 10.0"
   spec.add_development_dependency "rspec", "~> 3.0"
+  spec.add_development_dependency "guard"
+  spec.add_development_dependency "guard-rspec"
+  spec.add_development_dependency 'terminal-notifier-guard'
+
+  spec.add_runtime_dependency 'terminal-table'
+  spec.add_runtime_dependency 'thor'
+  spec.add_runtime_dependency 'colorize'
+  spec.add_runtime_dependency 'civo'
 end
