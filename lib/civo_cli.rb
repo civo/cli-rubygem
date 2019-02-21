@@ -1,5 +1,8 @@
 require "civo_cli/version"
 
+require "flexirest"
+require "civo"
+require "json"
 require "thor"
 require "terminal-table"
 require 'colorize'
@@ -9,56 +12,57 @@ module CivoCLI
   class Error < StandardError; end
 
   class Main < Thor
-    desc "apikey SUBCOMMAND ...ARGS", "manage API keys stored in the client"
+    desc "apikey", "manage API keys stored in the client"
     subcommand "apikey", CivoCLI::APIKey
-    map apikeys: :apikey
+    map "apikeys" => "apikey"
 
-    desc "domain SUBCOMMAND ...ARGS", "manage DNS domains"
+    desc "domain", "manage DNS domains"
     subcommand "domain", CivoCLI::Domain
-    map domains: :domain
+    map "domains" => "domain"
 
-    desc "firewall SUBCOMMAND ...ARGS", "manage firewalls"
+    desc "firewall", "manage firewalls"
     subcommand "firewall", CivoCLI::Firewall
-    map firewalls: :firewall
+    map "firewalls" => "firewall"
 
-    desc "instance SUBCOMMAND ...ARGS", "manage instances"
+    desc "instance", "manage instances"
     subcommand "instance", CivoCLI::Instance
-    map instances: :instance
+    map "instances" => "instance"
 
-    desc "ip SUBCOMMAND ...ARGS", "manage IP addresses"
+    desc "ip", "manage IP addresses"
     subcommand "ip", CivoCLI::IP
-    map ips: :ip
+    map "ips" => "ip"
 
-    desc "network SUBCOMMAND ...ARGS", "manage networks"
+    desc "network", "manage networks"
     subcommand "network", CivoCLI::Network
-    map networks: :network
+    map "networks" => "network"
 
-    desc "quota SUBCOMMAND ...ARGS", "view the quota"
+    desc "quota", "view the quota"
     subcommand "quota", CivoCLI::Quota
-    map quotas: :quota
+    map "quotas" => "quota"
 
-    desc "region SUBCOMMAND ...ARGS", "manage regions"
+    desc "region", "manage regions"
     subcommand "region", CivoCLI::Region
-    map regions: :region
+    map "regions" => "region"
 
-    desc "size SUBCOMMAND ...ARGS", "manage sizes"
+    desc "size", "manage sizes"
     subcommand "size", CivoCLI::Size
-    map sizes: :size
+    map "sizes" => "size"
 
-    desc "snapshot SUBCOMMAND ...ARGS", "manage snapshots"
+    desc "snapshot", "manage snapshots"
     subcommand "snapshot", CivoCLI::Snapshot
-    map snapshots: :snapshot
+    map "snapshots" => "snapshot"
 
-    desc "sshkey SUBCOMMAND ...ARGS", "manage uploaded SSH keys"
+    desc "sshkey", "manage uploaded SSH keys"
     subcommand "sshkey", CivoCLI::SSHKey
-    map sshkeys: :sshkey
+    map "sshkeys" => "sshkey"
 
-    desc "template SUBCOMMAND ...ARGS", "manage templates"
+    desc "template", "manage templates"
     subcommand "template", CivoCLI::Template
-    map templates: :template
+    map "templates" => "template"
 
-    desc "volume SUBCOMMAND ...ARGS", "manage volumes"
+    desc "volume", "manage volumes"
     subcommand "volume", CivoCLI::Volume
-    map volumes: :volume
+    map "volumes" => "volume"
+
   end
 end

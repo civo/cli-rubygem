@@ -1,5 +1,7 @@
 require "bundler/setup"
 require "civo_cli"
+require "helpers"
+require 'webmock/rspec'
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
@@ -10,5 +12,16 @@ RSpec.configure do |config|
 
   config.expect_with :rspec do |c|
     c.syntax = :expect
+  end
+
+  config.include Helpers
+
+  config.full_backtrace = true
+
+  config.before do
+    reset_dummy_cli_config
+    ENV["CIVO_API_VERSION"] = "2"
+    ENV["CIVO_TOKEN"] = "not-used"
+    ENV["CIVO_URL"] = "https://api.example.com"
   end
 end
