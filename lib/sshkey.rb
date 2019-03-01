@@ -21,7 +21,7 @@ module CivoCLI
     end
     map "create" => "upload", "new" => "upload"
 
-    desc "upload NAME FILENAME", "upload the SSH public key in FILENAME to a new key called NAME"
+    desc "remove ID", "remove the SSH public key with ID"
     def remove(id)
       CivoCLI::Config.set_api_auth
       ssh_key = Civo::SshKey.all.items.detect {|key| key.id == id}

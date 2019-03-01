@@ -1,6 +1,5 @@
 require "civo_cli/version"
 
-require "flexirest"
 require "civo"
 require "json"
 require "thor"
@@ -27,10 +26,6 @@ module CivoCLI
     desc "instance", "manage instances"
     subcommand "instance", CivoCLI::Instance
     map "instances" => "instance"
-
-    desc "ip", "manage IP addresses"
-    subcommand "ip", CivoCLI::IP
-    map "ips" => "ip"
 
     desc "network", "manage networks"
     subcommand "network", CivoCLI::Network

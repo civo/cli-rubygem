@@ -51,5 +51,4 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency 'colorize'
   spec.add_runtime_dependency 'civo', ">= 1.1.7"
   spec.add_runtime_dependency 'json'
-  spec.add_runtime_dependency 'flexirest'
 end
