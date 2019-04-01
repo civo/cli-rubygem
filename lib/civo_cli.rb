@@ -15,6 +15,10 @@ module CivoCLI
     subcommand "apikey", CivoCLI::APIKey
     map "apikeys" => "apikey"
 
+    desc "blueprint", "manage blueprints"
+    subcommand "blueprint", CivoCLI::Blueprint
+    map "blueprints" => "blueprint"
+
     desc "domain", "manage DNS domains"
     subcommand "domain", CivoCLI::Domain
     map "domains" => "domain"

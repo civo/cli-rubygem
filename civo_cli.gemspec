@@ -49,6 +49,6 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency 'terminal-table'
   spec.add_runtime_dependency 'thor'
   spec.add_runtime_dependency 'colorize'
-  spec.add_runtime_dependency 'civo', ">= 1.1.7"
+  spec.add_runtime_dependency 'civo', ">= 1.1.14"
   spec.add_runtime_dependency 'json'
 end

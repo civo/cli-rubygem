@@ -84,7 +84,7 @@ module CivoCLI
     desc "remove ID", "remove the template with ID"
     def remove(id)
       CivoCLI::Config.set_api_auth
-      Civo::Template.remove
+      Civo::Template.remove(id)
     rescue Flexirest::HTTPException => e
       puts e.result.reason.colorize(:red)
       exit 1
