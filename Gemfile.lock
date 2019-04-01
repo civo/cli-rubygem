@@ -1,8 +1,8 @@
 PATH
   remote: .
   specs:
-    civo_cli (0.1.0)
-      civo (>= 1.1.13)
+    civo_cli (0.1.1)
+      civo (>= 1.1.14)
       colorize
       json
       terminal-table
