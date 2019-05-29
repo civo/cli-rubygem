@@ -23,6 +23,10 @@ module CivoCLI
     subcommand "domain", CivoCLI::Domain
     map "domains" => "domain"
 
+    desc "domainrecord", "manage domain name DNS records for a domain"
+    subcommand "domainrecord", CivoCLI::DomainRecord
+    map "domainrecords" => "domainrecord"
+
     desc "firewall", "manage firewalls"
     subcommand "firewall", CivoCLI::Firewall
     map "firewalls" => "firewall"

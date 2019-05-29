@@ -42,7 +42,7 @@ module CivoCLI
       params[:dsl_content] = File.read(options["content-file"]) unless options["content-file"].nil?
       params[:template_id] = options["template-id"] unless options["template-id"].nil?
       params[:name] = options["name"] unless options["name"].nil?
-      Civo::Blueprint.save(params)
+      Civo::Blueprint.update(params)
       blueprint = Civo::Blueprint.all.detect {|b| b.id == id }
       puts "Updated blueprint #{blueprint.name.colorize(:green)}"
     rescue Flexirest::HTTPException => e
@@ -60,7 +60,8 @@ module CivoCLI
       params[:dsl_content] = File.read(options["content-file"]) unless options["content-file"].nil?
       params[:template_id] = options["template-id"] unless options["template-id"].nil?
       params[:name] = options["name"] unless options["name"].nil?
-      blueprint = Civo::Blueprint.create(params)
+      result = Civo::Blueprint.create(params)
+      blueprint = Civo::Blueprint.all.detect {|b| b.id == result.id }
       puts "Created blueprint #{blueprint.name.colorize(:green)} with ID #{blueprint.id.colorize(:green)}"
     rescue Flexirest::HTTPException => e
       puts e.result.reason.colorize(:red)
