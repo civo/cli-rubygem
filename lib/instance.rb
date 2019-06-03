@@ -19,9 +19,64 @@ module CivoCLI
       end
     end
 
-    desc "", ""
-    def find
+    desc "show ID/HOSTNAME", "show an instance by ID or hostname"
+    def show(id)
       # {ENV["CIVO_API_VERSION"] || "1"}/instances/:id", requires: [:id]
+      CivoCLI::Config.set_api_auth
+      rows = []
+      instance = Civo::Instance.all.items.detect do |instance|
+        next unless instance.id == id || instance.hostname == id
+        instance
+      end
+
+      sizes = Civo::Size.all(all: true).items
+      ssh_keys = Civo::SshKey.all.items
+      networks = Civo::Network.all.items
+      firewalls = Civo::Firewall.all.items
+
+      size = sizes.detect {|s| s.name == instance.size}
+      if size
+        @size_name = size.description
+      end
+      @network = networks.detect {|n| n.id == instance.network_id}
+      @firewall = firewalls.detect {|fw| fw.id == instance.firewall_id}
+
+      puts "                ID : #{instance.id}"
+      puts "          Hostname : #{instance.hostname}"
+      if instance.reverse_dns
+        puts "       Reverse DNS : #{instance.reverse_dns}"
+      end
+      puts "              Tags : #{instance.tags.join(", ")}"
+      puts "              Size : #{@size_name}"
+      case instance.status
+      when "ACTIVE"
+        puts "            Status : #{instance.status.colorize(:green)}"
+      when /ING$/
+        puts "            Status : #{instance.status.colorize(:orange)}"
+      else
+        puts "            Status : #{instance.status.colorize(:red)}"
+      end
+      puts "        Private IP : #{instance.private_ip}"
+      puts "         Public IP : #{[instance.pseudo_ip, instance.public_ip].join(" => ")}"
+      puts "           Network : #{@network.label} (#{@network.cidr})"
+      puts "          Firewall : #{@firewall.name} (rules: #{@firewall.rules_count})"
+      puts "            Region : #{instance.region}"
+      puts "      Initial User : #{instance.initial_user}"
+      puts "  Initial Password : #{instance.initial_password}"
+      if instance.ssh_key.present?
+        key = ssh_keys.detect {|k| k.id == instance.ssh_key}
+        puts "           SSH Key : #{key.name} (#{key.fingerprint})"
+      end
+      puts "      OpenStack ID : #{instance.openstack_server_id}"
+      puts "       Template ID : #{instance.template_id}"
+      puts "       Snapshot ID : #{instance.snapshot_id}"
+      puts ""
+      puts "-" * 29 + " NOTES " + "-" * 29
+      puts ""
+      puts instance.notes
+    rescue Flexirest::HTTPException => e
+      puts e.result.reason.colorize(:red)
+      exit 1
     end
 
     desc "", ""
@@ -30,7 +85,7 @@ module CivoCLI
       # defaults: {public_ip: true, initial_user: "civo"}
     end
 
-    desc "", ""
+    desc "tags ID", ""
     def tags
 
     end
@@ -66,11 +121,6 @@ module CivoCLI
     end
 
     desc "", ""
-    def rebuild
-      # {ENV["CIVO_API_VERSION"] || "1"}/instances/:id/rebuild", requires: [:id]
-    end
-
-    desc "", ""
     def stop
       # {ENV["CIVO_API_VERSION"] || "1"}/instances/:id/stop", requires: [:id]
     end
@@ -86,24 +136,19 @@ module CivoCLI
     end
 
     desc "", ""
-    def restore
-      # {ENV["CIVO_API_VERSION"] || "1"}/instances/:id/restore", requires: [:snapshot, :id]
-    end
-
-    desc "", ""
     def move_ip
       # {ENV["CIVO_API_VERSION"] || "1"}/instances/:id/ip/:ip", requires: [:ip, :id]
     end
 
-    desc "", ""
-    def rescue
-      # {ENV["CIVO_API_VERSION"] || "1"}/instances/:id/rescue", requires: [:id]
-    end
+    # desc "", ""
+    # def rescue
+    #   # {ENV["CIVO_API_VERSION"] || "1"}/instances/:id/rescue", requires: [:id]
+    # end
 
-    desc "", ""
-    def unrescue
-      # {ENV["CIVO_API_VERSION"] || "1"}/instances/:id/unrescue", requires: [:id]
-    end
+    # desc "", ""
+    # def unrescue
+    #   # {ENV["CIVO_API_VERSION"] || "1"}/instances/:id/unrescue", requires: [:id]
+    # end
 
     desc "", ""
     def firewall
