@@ -92,7 +92,6 @@ module CivoCLI
         next unless instance.id == id || instance.hostname == id
         instance
       end
-      if instance.tags == nil then instance.tags = "" end
       puts "        Tag(s) for #{instance.id}: #{instance.tags.join(", ")}"
       rescue Flexirest::HTTPException => e
       puts e.result.reason.colorize(:red)
