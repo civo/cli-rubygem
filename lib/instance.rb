@@ -40,7 +40,7 @@ module CivoCLI
       end
       @network = networks.detect {|n| n.id == instance.network_id}
       @firewall = firewalls.detect {|fw| fw.id == instance.firewall_id}
-
+  
       puts "                ID : #{instance.id}"
       puts "          Hostname : #{instance.hostname}"
       if instance.reverse_dns
@@ -59,7 +59,7 @@ module CivoCLI
       puts "        Private IP : #{instance.private_ip}"
       puts "         Public IP : #{[instance.pseudo_ip, instance.public_ip].join(" => ")}"
       puts "           Network : #{@network.label} (#{@network.cidr})"
-      puts "          Firewall : #{@firewall.name} (rules: #{@firewall.rules_count})"
+      puts "          Firewall : #{@firewall&.name} (rules: #{@firewall&.rules_count})"
       puts "            Region : #{instance.region}"
       puts "      Initial User : #{instance.initial_user}"
       puts "  Initial Password : #{instance.initial_password}"
@@ -85,9 +85,18 @@ module CivoCLI
       # defaults: {public_ip: true, initial_user: "civo"}
     end
 
-    desc "tags ID", ""
-    def tags
-
+    desc "tags ID", "show tags of an instance by ID"
+    def tags(id)
+      CivoCLI::Config.set_api_auth
+       instance = Civo::Instance.all.items.detect do |instance|
+        next unless instance.id == id || instance.hostname == id
+        instance
+      end
+      if instance.tags == nil then instance.tags = "" end
+      puts "        Tag(s) for #{instance.id}: #{instance.tags.join(", ")}"
+      rescue Flexirest::HTTPException => e
+      puts e.result.reason.colorize(:red)
+      exit 1
     end
 
     desc "", ""
