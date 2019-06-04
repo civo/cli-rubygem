@@ -38,6 +38,8 @@ module CivoCLI
 
     def self.get_meta(key)
       current["meta"].transform_keys{ |key| key.to_sym rescue key }[key]
+    rescue
+      nil
     end
 
     def self.set_meta(key, value)
@@ -47,6 +49,8 @@ module CivoCLI
 
     def self.current
       @config ||= JSON.parse(File.read(filename))
+    rescue
+      @config = {}
     end
 
     def self.reset
