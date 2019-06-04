@@ -26,6 +26,7 @@ module CivoCLI
     end
 
     def self.delete_apikey(key)
+      set_current_apikey_name(key)
       current["apikeys"].delete(key)
       if get_current_apikey_name == key
         if get_apikeys.any?
