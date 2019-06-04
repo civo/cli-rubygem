@@ -24,8 +24,16 @@ module CivoCLI
 
     desc "remove NAME", "Remove the API Key with a label of 'NAME'"
     def remove(name)
-      CivoCLI::Config.delete_apikey(name)
-      puts "Removed the API Key #{name.colorize(:green)}"
+       keys = CivoCLI::Config.get_apikeys
+        if keys.keys.include?(name)
+          CivoCLI::Config.delete_apikey(name)
+          puts "Removed the API Key #{name.colorize(:green)}"
+        else 
+          puts "The API Key #{name.colorize(:red)} couldn't be found."
+          exit 1
+        end
+
+
     end
     map "delete" => "remove", "rm" => "remove"
 
