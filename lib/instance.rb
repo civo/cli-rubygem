@@ -151,10 +151,10 @@ module CivoCLI
       
     end
 
-    desc "stop ID", "Shuts down the instance with ID provided"
+    desc "stop ID", "shuts down the instance with ID provided"
     def stop(id)
       # {ENV["CIVO_API_VERSION"] || "1"}/instances/:id/stop", requires: [:id]
-       CivoCLI::Config.set_api_auth
+      CivoCLI::Config.set_api_auth
 
      instance = Civo::Instance.all.items.detect do |instance|
         next unless instance.id == id || instance.hostname == id
@@ -169,9 +169,22 @@ module CivoCLI
         exit 1
     end
 
-    desc "", ""
-    def start
+    desc "start ID", "starts a stopped instance with ID provided"
+    def start(id)
       # {ENV["CIVO_API_VERSION"] || "1"}/instances/:id/start", requires: [:id]
+      CivoCLI::Config.set_api_auth
+
+     instance = Civo::Instance.all.items.detect do |instance|
+        next unless instance.id == id || instance.hostname == id
+        instance
+      end
+      
+      puts "        Starting #{instance.hostname.colorize(:green)}. Use 'civo instance show #{instance.hostname}' to see the current status."
+      instance.start
+
+        rescue Flexirest::HTTPException => e
+        puts e.result.reason.colorize(:red)
+        exit 1
     end
 
     desc "", ""
