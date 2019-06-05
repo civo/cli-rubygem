@@ -103,9 +103,21 @@ module CivoCLI
 
     end
 
-    desc "", ""
-    def remove
+    desc "remove ID", "removes an instance with ID entered (use with caution!)"
+    def remove(id)
       # {ENV["CIVO_API_VERSION"] || "1"}/instances/:id", requires: [:id], send_delete_body: true
+      CivoCLI::Config.set_api_auth
+      instance = Civo::Instance.all.items.detect do |instance|
+        next unless instance.id == id || instance.hostname == id
+        instance
+      end
+      puts "Removing instance #{instance.hostname}"
+      instance.remove
+      
+      rescue Flexirest::HTTPException => e
+      puts e.result.reason.colorize(:red)
+      exit 1
+
     end
 
     desc "reboot ID", "reboots instance with ID entered"
@@ -121,9 +133,9 @@ module CivoCLI
       puts "        Rebooting #{instance.hostname.colorize(:red)}. Use 'civo instance show #{instance.hostname}' to see the current status."
       instance.reboot
 
-        rescue Flexirest::HTTPException => e
-        puts e.result.reason.colorize(:red)
-        exit 1
+      rescue Flexirest::HTTPException => e
+      puts e.result.reason.colorize(:red)
+      exit 1
     end
     map "hard_reboot" => "reboot"
 
@@ -133,7 +145,7 @@ module CivoCLI
       # {ENV["CIVO_API_VERSION"] || "1"}/instances/:id/soft_reboots", requires: [:id]
       CivoCLI::Config.set_api_auth
 
-     instance = Civo::Instance.all.items.detect do |instance|
+      instance = Civo::Instance.all.items.detect do |instance|
         next unless instance.id == id || instance.hostname == id
         instance
       end
@@ -141,9 +153,9 @@ module CivoCLI
       puts "        Soft-rebooting #{instance.hostname.colorize(:red)}. Use 'civo instance show #{instance.hostname}' to see the current status."
       instance.soft_reboot
 
-        rescue Flexirest::HTTPException => e
-        puts e.result.reason.colorize(:red)
-        exit 1
+      rescue Flexirest::HTTPException => e
+      puts e.result.reason.colorize(:red)
+      exit 1
     end
 
     desc "console ID", "outputs a URL for a web-based console for instance with ID"
@@ -156,7 +168,7 @@ module CivoCLI
       # {ENV["CIVO_API_VERSION"] || "1"}/instances/:id/stop", requires: [:id]
       CivoCLI::Config.set_api_auth
 
-     instance = Civo::Instance.all.items.detect do |instance|
+      instance = Civo::Instance.all.items.detect do |instance|
         next unless instance.id == id || instance.hostname == id
         instance
       end
@@ -164,9 +176,9 @@ module CivoCLI
       puts "        Stopping #{instance.hostname.colorize(:red)}. Use 'civo instance show #{instance.hostname}' to see the current status."
       instance.stop
 
-        rescue Flexirest::HTTPException => e
-        puts e.result.reason.colorize(:red)
-        exit 1
+      rescue Flexirest::HTTPException => e
+      puts e.result.reason.colorize(:red)
+      exit 1
     end
 
     desc "start ID", "starts a stopped instance with ID provided"
@@ -174,7 +186,7 @@ module CivoCLI
       # {ENV["CIVO_API_VERSION"] || "1"}/instances/:id/start", requires: [:id]
       CivoCLI::Config.set_api_auth
 
-     instance = Civo::Instance.all.items.detect do |instance|
+      instance = Civo::Instance.all.items.detect do |instance|
         next unless instance.id == id || instance.hostname == id
         instance
       end
@@ -182,14 +194,26 @@ module CivoCLI
       puts "        Starting #{instance.hostname.colorize(:green)}. Use 'civo instance show #{instance.hostname}' to see the current status."
       instance.start
 
-        rescue Flexirest::HTTPException => e
-        puts e.result.reason.colorize(:red)
-        exit 1
+      rescue Flexirest::HTTPException => e
+      puts e.result.reason.colorize(:red)
+      exit 1
     end
 
-    desc "", ""
-    def upgrade
+    desc "upgrade ID new-size", "Upgrade instance with ID to new-size provided (see civo sizes for size names)"
+    def upgrade(id, new_size)
       # {ENV["CIVO_API_VERSION"] || "1"}/instances/:id/resize", requires: [:size, :id]
+       CivoCLI::Config.set_api_auth
+
+      instance = Civo::Instance.all.items.detect do |instance|
+        next unless instance.id == id || instance.hostname == id
+        instance
+      end
+      Civo::Instance.upgrade(id: instance.id, size: new_size)
+      puts "        Resizing #{instance.hostname.colorize(:green)} to #{new_size}.colorize(:red). Use 'civo instance show #{instance.hostname}' to see the current status."
+      
+      rescue Flexirest::HTTPException => e
+      puts e.result.reason.colorize(:red)
+      exit 1
     end
 
     desc "", ""
