@@ -108,19 +108,42 @@ module CivoCLI
       # {ENV["CIVO_API_VERSION"] || "1"}/instances/:id", requires: [:id], send_delete_body: true
     end
 
-    desc "", ""
-    def reboot
+    desc "reboot ID", "reboots instance with ID entered"
+    def reboot(id)
       # {ENV["CIVO_API_VERSION"] || "1"}/instances/:id/reboots", requires: [:id]
-    end
+     CivoCLI::Config.set_api_auth
 
-    desc "", ""
-    def hard_reboot
-      # {ENV["CIVO_API_VERSION"] || "1"}/instances/:id/hard_reboots", requires: [:id]
-    end
+     instance = Civo::Instance.all.items.detect do |instance|
+        next unless instance.id == id || instance.hostname == id
+        instance
+      end
+      
+      puts "        Rebooting #{instance.hostname.colorize(:red)}. Use 'civo instance show #{instance.hostname}' to see the current status."
+      instance.reboot
 
-    desc "", ""
-    def soft_reboot
+        rescue Flexirest::HTTPException => e
+        puts e.result.reason.colorize(:red)
+        exit 1
+    end
+    map "hard_reboot" => "reboot"
+
+
+    desc "soft_reboot ID", "soft-reboots instance with ID entered"
+    def soft_reboot(id)
       # {ENV["CIVO_API_VERSION"] || "1"}/instances/:id/soft_reboots", requires: [:id]
+      CivoCLI::Config.set_api_auth
+
+     instance = Civo::Instance.all.items.detect do |instance|
+        next unless instance.id == id || instance.hostname == id
+        instance
+      end
+      
+      puts "        Soft-rebooting #{instance.hostname.colorize(:red)}. Use 'civo instance show #{instance.hostname}' to see the current status."
+      instance.soft_reboot
+
+        rescue Flexirest::HTTPException => e
+        puts e.result.reason.colorize(:red)
+        exit 1
     end
 
     desc "", ""
