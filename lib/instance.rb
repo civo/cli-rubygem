@@ -146,14 +146,27 @@ module CivoCLI
         exit 1
     end
 
-    desc "", ""
-    def console
-      # {ENV["CIVO_API_VERSION"] || "1"}/instances/:id/console", requires: [:id]
+    desc "console ID", "outputs a URL for a web-based console for instance with ID"
+    def console(id)
+      
     end
 
-    desc "", ""
-    def stop
+    desc "stop ID", "Shuts down the instance with ID provided"
+    def stop(id)
       # {ENV["CIVO_API_VERSION"] || "1"}/instances/:id/stop", requires: [:id]
+       CivoCLI::Config.set_api_auth
+
+     instance = Civo::Instance.all.items.detect do |instance|
+        next unless instance.id == id || instance.hostname == id
+        instance
+      end
+      
+      puts "        Stopping #{instance.hostname.colorize(:red)}. Use 'civo instance show #{instance.hostname}' to see the current status."
+      instance.stop
+
+        rescue Flexirest::HTTPException => e
+        puts e.result.reason.colorize(:red)
+        exit 1
     end
 
     desc "", ""
