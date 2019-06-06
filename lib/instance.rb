@@ -85,14 +85,15 @@ module CivoCLI
       # defaults: {public_ip: true, initial_user: "civo"}
     end
 
-    desc "tags ID", "show tags of an instance by ID"
-    def tags(id)
+    desc "tags ID 'tag1 tag2 tag3...'", "retag instance by ID (input no tags to clear all tags)"
+    def tags(id, newtags=nil)
       CivoCLI::Config.set_api_auth
        instance = Civo::Instance.all.items.detect do |instance|
         next unless instance.id == id || instance.hostname == id
         instance
       end
-      puts "        Tag(s) for #{instance.id}: #{instance.tags.join(", ")}"
+        Civo::Instance.tags(id: instance.id, tags: newtags)
+        puts "Updated tags on #{instance.hostname.colorize(:green)}. Use 'civo instance show #{instance.hostname}' to see the current tags.'"
       rescue Flexirest::HTTPException => e
       puts e.result.reason.colorize(:red)
       exit 1
@@ -210,7 +211,7 @@ module CivoCLI
       exit 1
     end
 
-    desc "upgrade ID new-size", "Upgrade instance with ID to new-size provided (see civo sizes for size names)"
+    desc "upgrade ID new-size", "Upgrade instance with ID to size provided (see civo sizes for size names)"
     def upgrade(id, new_size)
       # {ENV["CIVO_API_VERSION"] || "1"}/instances/:id/resize", requires: [:size, :id]
        CivoCLI::Config.set_api_auth
