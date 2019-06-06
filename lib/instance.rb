@@ -158,9 +158,20 @@ module CivoCLI
       exit 1
     end
 
-    desc "console ID", "outputs a URL for a web-based console for instance with ID"
+    desc "console ID", "outputs a URL for a web-based console for instance with ID provided"
     def console(id)
+      # {ENV["CIVO_API_VERSION"] || "1"}/instances/:id/console", requires: [:id]
+      CivoCLI::Config.set_api_auth
       
+      instance = Civo::Instance.all.items.detect do |instance|
+        next unless instance.id == id || instance.hostname == id
+        instance
+      end
+
+      puts "        Access #{instance.hostname.colorize(:green)} at #{instance.console.url}"
+      rescue Flexirest::HTTPException => e
+        puts e.result.reason.colorize(:red)
+        exit 1
     end
 
     desc "stop ID", "shuts down the instance with ID provided"
