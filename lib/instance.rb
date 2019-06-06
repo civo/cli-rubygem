@@ -79,10 +79,13 @@ module CivoCLI
       exit 1
     end
 
-    desc "", ""
-    def create
+    desc "create hostname size template", "create a new instance with specified hostname, instance size, templateID. Optional: region, public_ip (true or false), initial user"
+    def create(hostname, size, template, region='lon1', public_ip=true, initial_user="civo")
       # {ENV["CIVO_API_VERSION"] || "1"}/instances", requires: [:hostname, :size, :region],
       # defaults: {public_ip: true, initial_user: "civo"}
+      CivoCLI::Config.set_api_auth
+      Civo::Instance.create(hostname: hostname, size: size, template: template, region: region)
+      puts "Created instance #{hostname}"
     end
 
     desc "tags ID 'tag1 tag2 tag3...'", "retag instance by ID (input no tags to clear all tags)"
