@@ -93,7 +93,7 @@ module CivoCLI
         instance
       end
         Civo::Instance.tags(id: instance.id, tags: newtags)
-        puts "Updated tags on #{instance.hostname.colorize(:green)}. Use 'civo instance show #{instance.hostname}' to see the current tags.'"
+        puts "        Updated tags on #{instance.hostname.colorize(:green)}. Use 'civo instance show #{instance.hostname}' to see the current tags.'"
       rescue Flexirest::HTTPException => e
       puts e.result.reason.colorize(:red)
       exit 1
@@ -112,7 +112,7 @@ module CivoCLI
         next unless instance.id == id || instance.hostname == id
         instance
       end
-      puts "Removing instance #{instance.hostname}"
+      puts "        Removing instance #{instance.hostname.colorize(:red)}"
       instance.remove
       
       rescue Flexirest::HTTPException => e
@@ -228,9 +228,20 @@ module CivoCLI
       exit 1
     end
 
-    desc "", ""
-    def move_ip
+    desc "move_ip targetID IP_Address", "move a public IP_Address to target instance"
+    def move_ip(id, ip_address)
       # {ENV["CIVO_API_VERSION"] || "1"}/instances/:id/ip/:ip", requires: [:ip, :id]
+      CivoCLI::Config.set_api_auth
+
+      instance = Civo::Instance.all.items.detect do |instance|
+        next unless instance.id == id || instance.hostname == id
+        instance
+      end
+      Civo::Instance.move_ip(id: instance.id, ip: ip_address)
+      puts "        Moved public IP #{ip_address} to instance #{instance.hostname}"
+      rescue Flexirest::HTTPException => e
+      puts e.result.reason.colorize(:red)
+      exit 1
     end
 
     # desc "", ""
