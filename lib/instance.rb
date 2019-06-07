@@ -79,13 +79,37 @@ module CivoCLI
       exit 1
     end
 
-    desc "create hostname size template", "create a new instance with specified hostname, instance size, templateID. Optional: region, public_ip (true or false), initial user"
-    def create(hostname, size, template, region='lon1', public_ip=true, initial_user="civo")
+    desc "create --hostname=host_name --size=instance_size [--template= ][--snapshot= ]", "create a new instance with specified hostname, instance size, template/snapshot ID. Optional: region, public_ip (true or false), initial user"
+    option :hostname, :required => true
+    option :size, :required => true
+    option :region, :default => 'lon1'
+    option :public_ip, :default => true, :type => :boolean
+    option :initial_user, :default => "civo"
+    option :template
+    option :snapshot
+    def create(*args)
       # {ENV["CIVO_API_VERSION"] || "1"}/instances", requires: [:hostname, :size, :region],
       # defaults: {public_ip: true, initial_user: "civo"}
       CivoCLI::Config.set_api_auth
-      Civo::Instance.create(hostname: hostname, size: size, template: template, region: region)
-      puts "        Created instance #{hostname.colorize(:green)}"
+      
+      if options[:template] && options[:snapshot] || !options[:template] && !options[:snapshot]
+        puts "Please provide either template OR snapshot ID".colorize(:red)
+        exit 1
+      end
+      
+      if options[:template]
+        Civo::Instance.create(hostname: options[:hostname], size: options[:size], template: options[:template], region: options[:region])
+      end
+
+      if options[:snapshot]
+      Civo::Instance.create(hostname: options[:hostname], size: options[:size], snapshot_id: options[:snapshot], region: options[:region])
+      end
+      
+      puts "        Created instance #{options[:hostname].colorize(:green)}"
+
+      rescue Flexirest::HTTPException => e
+      puts e.result.reason.colorize(:red)
+      exit 1
     end
 
     desc "tags ID 'tag1 tag2 tag3...'", "retag instance by ID (input no tags to clear all tags)"
