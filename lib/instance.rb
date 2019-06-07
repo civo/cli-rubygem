@@ -91,7 +91,7 @@ module CivoCLI
     desc "tags ID 'tag1 tag2 tag3...'", "retag instance by ID (input no tags to clear all tags)"
     def tags(id, newtags=nil)
       CivoCLI::Config.set_api_auth
-       instance = Civo::Instance.all.items.detect do |instance|
+      instance = Civo::Instance.all.items.detect do |instance|
         next unless instance.id == id || instance.hostname == id
         instance
       end
@@ -208,7 +208,7 @@ module CivoCLI
       end
       
       puts "        Stopping #{instance.hostname.colorize(:red)}. Use 'civo instance show #{instance.hostname}' to see the current status."
-      instance.stop
+      Civo::Instance.stop(id: instance.id)
 
       rescue Flexirest::HTTPException => e
       puts e.result.reason.colorize(:red)
@@ -276,9 +276,22 @@ module CivoCLI
     #   # {ENV["CIVO_API_VERSION"] || "1"}/instances/:id/unrescue", requires: [:id]
     # end
 
-    desc "", ""
-    def firewall
+    desc "firewall ID/hostname firewall_id", "set instance to use firewall with firewall_id"
+    def firewall(id, firewall_id)
       # {ENV["CIVO_API_VERSION"] || "1"}/instances/:id/firewall", requires: [:firewall_id, :id]
+      CivoCLI::Config.set_api_auth
+
+      instance = Civo::Instance.all.items.detect do |instance|
+        next unless instance.id == id || instance.hostname == id
+        instance
+      end
+
+      Civo::Instance.firewall(id: instance.id, firewall_id: firewall_id)
+      puts "        Set #{instance.hostname.colorize(:green)} to use firewall '#{firewall_id.colorize(:yellow)}'"
+
+      rescue Flexirest::HTTPException => e
+      puts e.result.reason.colorize(:red)
+      exit 1
     end
 
     default_task :list
