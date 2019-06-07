@@ -102,7 +102,7 @@ module CivoCLI
       exit 1
     end
 
-    desc "update ID/hostname [--name new_hostname][--notes 'txt']", "update details of instance. Use --hostname=, --notes='notes' to specify update"
+    desc "update ID/HOSTNAME [--name new_hostname][--notes 'txt']", "update details of instance. Use --hostname=new_name, --notes='notes' to specify update"
     option :name
     option :notes
     def update(id)
@@ -126,7 +126,7 @@ module CivoCLI
 
     end
 
-    desc "remove ID", "removes an instance with ID/hostname entered (use with caution!)"
+    desc "remove ID/HOSTNAME", "removes an instance with ID/hostname entered (use with caution!)"
     def remove(id)
       # {ENV["CIVO_API_VERSION"] || "1"}/instances/:id", requires: [:id], send_delete_body: true
       CivoCLI::Config.set_api_auth
@@ -143,7 +143,7 @@ module CivoCLI
 
     end
 
-    desc "reboot ID", "reboots instance with ID/hostname entered"
+    desc "reboot ID/HOSTNAME", "reboots instance with ID/hostname entered"
     def reboot(id)
       # {ENV["CIVO_API_VERSION"] || "1"}/instances/:id/reboots", requires: [:id]
      CivoCLI::Config.set_api_auth
@@ -163,7 +163,7 @@ module CivoCLI
     map "hard_reboot" => "reboot"
 
 
-    desc "soft_reboot ID", "soft-reboots instance with ID entered"
+    desc "soft_reboot ID/HOSTNAME", "soft-reboots instance with ID entered"
     def soft_reboot(id)
       # {ENV["CIVO_API_VERSION"] || "1"}/instances/:id/soft_reboots", requires: [:id]
       CivoCLI::Config.set_api_auth
@@ -181,7 +181,7 @@ module CivoCLI
       exit 1
     end
 
-    desc "console ID", "outputs a URL for a web-based console for instance with ID provided"
+    desc "console ID/HOSTNAME", "outputs a URL for a web-based console for instance with ID provided"
     def console(id)
       # {ENV["CIVO_API_VERSION"] || "1"}/instances/:id/console", requires: [:id]
       CivoCLI::Config.set_api_auth
@@ -197,7 +197,7 @@ module CivoCLI
         exit 1
     end
 
-    desc "stop ID", "shuts down the instance with ID provided"
+    desc "stop ID/HOSTNAME", "shuts down the instance with ID provided"
     def stop(id)
       # {ENV["CIVO_API_VERSION"] || "1"}/instances/:id/stop", requires: [:id]
       CivoCLI::Config.set_api_auth
@@ -215,7 +215,7 @@ module CivoCLI
       exit 1
     end
 
-    desc "start ID", "starts a stopped instance with ID provided"
+    desc "start ID/HOSTNAME", "starts a stopped instance with ID provided"
     def start(id)
       # {ENV["CIVO_API_VERSION"] || "1"}/instances/:id/start", requires: [:id]
       CivoCLI::Config.set_api_auth
@@ -276,7 +276,7 @@ module CivoCLI
     #   # {ENV["CIVO_API_VERSION"] || "1"}/instances/:id/unrescue", requires: [:id]
     # end
 
-    desc "firewall ID/hostname firewall_id", "set instance to use firewall with firewall_id"
+    desc "firewall ID/HOSTNAME firewall_id", "set instance to use firewall with firewall_id"
     def firewall(id, firewall_id)
       # {ENV["CIVO_API_VERSION"] || "1"}/instances/:id/firewall", requires: [:firewall_id, :id]
       CivoCLI::Config.set_api_auth
