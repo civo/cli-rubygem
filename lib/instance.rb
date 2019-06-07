@@ -107,15 +107,23 @@ module CivoCLI
     option :notes
     def update(id)
       CivoCLI::Config.set_api_auth
-       instance = Civo::Instance.all.items.detect do |instance|
+      instance = Civo::Instance.all.items.detect do |instance|
         next unless instance.id == id || instance.hostname == id
         instance
       end
       if options[:name] 
-        instance.update(hostname: options[:name])
-        puts "        Instance #{instance.id} now named #{instance.hostname.colorize(:green)}"
+        Civo::Instance.update(id: instance.id, hostname: options[:name])
+        puts "        Instance #{instance.id} now named #{options[:name].colorize(:green)}"
       end
-      
+      if options[:notes]
+        Civo::Instance.update(id: instance.id, notes: options[:notes])
+        puts "        Instance #{instance.id} notes are now: #{options[:notes].colorize(:green)}"
+      end
+
+      rescue Flexirest::HTTPException => e
+        puts e.result.reason.colorize(:red)
+        exit 1
+
     end
 
     desc "remove ID", "removes an instance with ID/hostname entered (use with caution!)"
