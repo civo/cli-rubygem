@@ -85,7 +85,7 @@ module CivoCLI
       # defaults: {public_ip: true, initial_user: "civo"}
       CivoCLI::Config.set_api_auth
       Civo::Instance.create(hostname: hostname, size: size, template: template, region: region)
-      puts "Created instance #{hostname}"
+      puts "        Created instance #{hostname.colorize(:green)}"
     end
 
     desc "tags ID 'tag1 tag2 tag3...'", "retag instance by ID (input no tags to clear all tags)"
@@ -102,12 +102,23 @@ module CivoCLI
       exit 1
     end
 
-    desc "", ""
-    def update
-
+    desc "update ID/hostname [--name new_hostname][--notes 'txt']", "update details of instance. Use --hostname=, --notes='notes' to specify update"
+    option :name
+    option :notes
+    def update(id)
+      CivoCLI::Config.set_api_auth
+       instance = Civo::Instance.all.items.detect do |instance|
+        next unless instance.id == id || instance.hostname == id
+        instance
+      end
+      if options[:name] 
+        instance.update(hostname: options[:name])
+        puts "        Instance #{instance.id} now named #{instance.hostname.colorize(:green)}"
+      end
+      
     end
 
-    desc "remove ID", "removes an instance with ID entered (use with caution!)"
+    desc "remove ID", "removes an instance with ID/hostname entered (use with caution!)"
     def remove(id)
       # {ENV["CIVO_API_VERSION"] || "1"}/instances/:id", requires: [:id], send_delete_body: true
       CivoCLI::Config.set_api_auth
@@ -124,7 +135,7 @@ module CivoCLI
 
     end
 
-    desc "reboot ID", "reboots instance with ID entered"
+    desc "reboot ID", "reboots instance with ID/hostname entered"
     def reboot(id)
       # {ENV["CIVO_API_VERSION"] || "1"}/instances/:id/reboots", requires: [:id]
      CivoCLI::Config.set_api_auth
