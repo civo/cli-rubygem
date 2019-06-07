@@ -3,4 +3,13 @@ require "rspec/core/rake_task"
 
 RSpec::Core::RakeTask.new(:spec)
 
+task :console do
+  require 'irb'
+  require 'irb/completion'
+  require './lib/civo_cli'
+  ARGV.clear
+  IRB.start
+end
+task :c => :console
+
 task :default => :spec
