@@ -43,15 +43,23 @@ module CivoCLI
     option :firewall_id, :required => true
     option :protocol, :default => 'tcp'
     option :start_port, :required => true
-    option :end_port, :default => :start_port
+    option :end_port
     option :cidr, :default => '0.0.0.0/0'
     option :direction, :default => 'inbound'
     option :label
     def new_rule
       CivoCLI::Config.set_api_auth
 
-      Civo::FirewallRule.create(id: options[:firewall_id], start_port: options[:start_port], end_port: options[:end_port], cidr: options[:cidr], direction: options[:direction], label: options[:label])
-      
+      if !options[:end_port]
+        Civo::FirewallRule.create(firewall_id: options[:firewall_id], start_port: options[:start_port], end_port: options[:start_port], cidr: options[:cidr], direction: options[:direction], label: options[:label])
+      end
+
+      if options[:end_port]
+        Civo::FirewallRule.create(firewall_id: options[:firewall_id], start_port: options[:start_port], end_port: options[:end_port], cidr: options[:cidr], direction: options[:direction], label: options[:label])
+      end
+
+      puts "New rule" + (options[:label].nil? ? "" : " #{options[:label].colorize(:green)}") + " created"
+ 
       rescue Flexirest::HTTPException => e
       puts e.result.reason.colorize(:red)
       exit 1
