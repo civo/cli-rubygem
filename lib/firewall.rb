@@ -2,7 +2,6 @@ module CivoCLI
   class Firewall < Thor
     desc "create firewall_name", "Create a new firewall"
     def create(firewall_name)
-      # {ENV["CIVO_API_VERSION"] || "1"}/firewalls"
       CivoCLI::Config.set_api_auth
     
       Civo::Firewall.create(name: firewall_name)
@@ -83,7 +82,6 @@ module CivoCLI
 
     desc "delete_rule firewall_id rule_id", "Deletes rule with rule_id from firewall with firewall_id"
     def delete_rule(firewall_id, rule_id)
-      # "/v2/firewalls/:firewall_id/rules/:id", required: [:firewall_id, :id]
       CivoCLI::Config.set_api_auth
 
       Civo::FirewallRule.remove(firewall_id: firewall_id, id: rule_id)
