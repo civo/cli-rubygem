@@ -23,9 +23,16 @@ module CivoCLI
       puts Terminal::Table.new headings: ['ID', 'Name', 'No. of Rules', 'instances using'], rows: rows
     end
 
-    desc "", ""
-    def remove
+    desc "remove firewall_ID", "removes a firewall with Firewall ID provided"
+    def remove(firewall_ID)
+      CivoCLI::Config.set_api_auth
+      
+      Civo::Firewall.remove(id: firewall_ID)
+      puts "        Removed firewall #{firewall_ID.colorize(:red)}"
 
+      rescue Flexirest::HTTPException => e
+      puts e.result.reason.colorize(:red)
+      exit 1
     end
 
     desc "", ""
