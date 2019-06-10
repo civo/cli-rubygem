@@ -21,6 +21,10 @@ module CivoCLI
         rows << [element.id, element.name, element.rules_count, element.instances_count]
       end
       puts Terminal::Table.new headings: ['ID', 'Name', 'No. of Rules', 'instances using'], rows: rows
+
+      rescue Flexirest::HTTPException => e
+      puts e.result.reason.colorize(:red)
+      exit 1
     end
 
     desc "remove firewall_ID", "Removes a firewall with Firewall ID provided"
@@ -56,21 +60,30 @@ module CivoCLI
     desc "list_rules firewall_id", "Lists all active rules for firewall ID provided"
     def list_rules(firewall_id)
       CivoCLI::Config.set_api_auth
+      
       rules = Civo::FirewallRule.all(firewall_id: firewall_id)
       rows = []
       rules.each do |rule|
         rows << [rule.id, rule.protocol, rule.start_port, rule.end_port, rule.cidr.items.join(", "), rule.label]
       end
-      puts Terminal::Table.new headings: ['ID', 'Protocol', 'Start Port', 'End Port', 'CIDR', 'Label'], rows: rows
+      puts Terminal::Table.new title: "Firewall rules for #{firewall_id}", headings: ['ID', 'Protocol', 'Start Port', 'End Port', 'CIDR', 'Label'], rows: rows
       
       rescue Flexirest::HTTPException => e
       puts e.result.reason.colorize(:red)
       exit 1
     end
 
-    desc "delete_rule firewall_id rule_id", "Deletes "
-    def delete_rule
+    desc "delete_rule firewall_id rule_id", "Deletes rule with rule_id from firewall with firewall_id"
+    def delete_rule(firewall_id, rule_id)
+      # "/v2/firewalls/:firewall_id/rules/:id", required: [:firewall_id, :id]
+      CivoCLI::Config.set_api_auth
 
+      Civo::FirewallRule.remove(firewall_id: firewall_id, id: rule_id)
+      puts "        Removed Firewall rule #{rule_id.colorize(:red)}"
+      
+      rescue Flexirest::HTTPException => e
+      puts e.result.reason.colorize(:red)
+      exit 1
     end
   end
 end
