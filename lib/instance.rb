@@ -13,9 +13,13 @@ module CivoCLI
     end
 
     if CivoCLI::Config.get_meta("admin")
-      desc "", ""
+      desc "high_cpu", "list high CPU using instances"
       def high_cpu
         # {ENV["CIVO_API_VERSION"] || "1"}/instances/high_cpu"
+        CivoCLI::Config.set_api_auth
+        instance = detect_instance_id(id)
+
+        Civo::Instance.high_cpu
       end
     end
 
@@ -24,10 +28,7 @@ module CivoCLI
       # {ENV["CIVO_API_VERSION"] || "1"}/instances/:id", requires: [:id]
       CivoCLI::Config.set_api_auth
       rows = []
-      instance = Civo::Instance.all.items.detect do |instance|
-        next unless instance.id == id || instance.hostname == id
-        instance
-      end
+      instance = detect_instance_id(id)
 
       sizes = Civo::Size.all(all: true).items
       ssh_keys = Civo::SshKey.all.items
@@ -115,10 +116,8 @@ module CivoCLI
     desc "tags ID 'tag1 tag2 tag3...'", "retag instance by ID (input no tags to clear all tags)"
     def tags(id, newtags=nil)
       CivoCLI::Config.set_api_auth
-      instance = Civo::Instance.all.items.detect do |instance|
-        next unless instance.id == id || instance.hostname == id
-        instance
-      end
+      instance = detect_instance_id(id)
+
         Civo::Instance.tags(id: instance.id, tags: newtags)
         puts "        Updated tags on #{instance.hostname.colorize(:green)}. Use 'civo instance show #{instance.hostname}' to see the current tags.'"
       rescue Flexirest::HTTPException => e
@@ -131,10 +130,8 @@ module CivoCLI
     option :notes
     def update(id)
       CivoCLI::Config.set_api_auth
-      instance = Civo::Instance.all.items.detect do |instance|
-        next unless instance.id == id || instance.hostname == id
-        instance
-      end
+      instance = detect_instance_id(id)
+
       if options[:name] 
         Civo::Instance.update(id: instance.id, hostname: options[:name])
         puts "        Instance #{instance.id} now named #{options[:name].colorize(:green)}"
@@ -154,10 +151,8 @@ module CivoCLI
     def remove(id)
       # {ENV["CIVO_API_VERSION"] || "1"}/instances/:id", requires: [:id], send_delete_body: true
       CivoCLI::Config.set_api_auth
-      instance = Civo::Instance.all.items.detect do |instance|
-        next unless instance.id == id || instance.hostname == id
-        instance
-      end
+      instance = detect_instance_id(id)
+
       puts "        Removing instance #{instance.hostname.colorize(:red)}"
       instance.remove
       
@@ -172,10 +167,7 @@ module CivoCLI
       # {ENV["CIVO_API_VERSION"] || "1"}/instances/:id/reboots", requires: [:id]
      CivoCLI::Config.set_api_auth
 
-     instance = Civo::Instance.all.items.detect do |instance|
-        next unless instance.id == id || instance.hostname == id
-        instance
-      end
+     instance = detect_instance_id(id)
       
       puts "        Rebooting #{instance.hostname.colorize(:red)}. Use 'civo instance show #{instance.hostname}' to see the current status."
       instance.reboot
@@ -192,10 +184,7 @@ module CivoCLI
       # {ENV["CIVO_API_VERSION"] || "1"}/instances/:id/soft_reboots", requires: [:id]
       CivoCLI::Config.set_api_auth
 
-      instance = Civo::Instance.all.items.detect do |instance|
-        next unless instance.id == id || instance.hostname == id
-        instance
-      end
+      instance = detect_instance_id(id)
       
       puts "        Soft-rebooting #{instance.hostname.colorize(:red)}. Use 'civo instance show #{instance.hostname}' to see the current status."
       instance.soft_reboot
@@ -210,10 +199,7 @@ module CivoCLI
       # {ENV["CIVO_API_VERSION"] || "1"}/instances/:id/console", requires: [:id]
       CivoCLI::Config.set_api_auth
       
-      instance = Civo::Instance.all.items.detect do |instance|
-        next unless instance.id == id || instance.hostname == id
-        instance
-      end
+      instance = detect_instance_id(id)
 
       puts "        Access #{instance.hostname.colorize(:green)} at #{instance.console.url}"
       rescue Flexirest::HTTPException => e
@@ -226,10 +212,7 @@ module CivoCLI
       # {ENV["CIVO_API_VERSION"] || "1"}/instances/:id/stop", requires: [:id]
       CivoCLI::Config.set_api_auth
 
-      instance = Civo::Instance.all.items.detect do |instance|
-        next unless instance.id == id || instance.hostname == id
-        instance
-      end
+      instance = detect_instance_id(id)
       
       puts "        Stopping #{instance.hostname.colorize(:red)}. Use 'civo instance show #{instance.hostname}' to see the current status."
       Civo::Instance.stop(id: instance.id)
@@ -244,10 +227,7 @@ module CivoCLI
       # {ENV["CIVO_API_VERSION"] || "1"}/instances/:id/start", requires: [:id]
       CivoCLI::Config.set_api_auth
 
-      instance = Civo::Instance.all.items.detect do |instance|
-        next unless instance.id == id || instance.hostname == id
-        instance
-      end
+      instance = detect_instance_id(id)
       
       puts "        Starting #{instance.hostname.colorize(:green)}. Use 'civo instance show #{instance.hostname}' to see the current status."
       instance.start
@@ -260,12 +240,10 @@ module CivoCLI
     desc "upgrade ID new-size", "Upgrade instance with ID to size provided (see civo sizes for size names)"
     def upgrade(id, new_size)
       # {ENV["CIVO_API_VERSION"] || "1"}/instances/:id/resize", requires: [:size, :id]
-       CivoCLI::Config.set_api_auth
+      CivoCLI::Config.set_api_auth
 
-      instance = Civo::Instance.all.items.detect do |instance|
-        next unless instance.id == id || instance.hostname == id
-        instance
-      end
+      instance = detect_instance_id(id)
+
       Civo::Instance.upgrade(id: instance.id, size: new_size)
       puts "        Resizing #{instance.hostname.colorize(:green)} to #{new_size}.colorize(:red). Use 'civo instance show #{instance.hostname}' to see the current status."
       
@@ -279,10 +257,8 @@ module CivoCLI
       # {ENV["CIVO_API_VERSION"] || "1"}/instances/:id/ip/:ip", requires: [:ip, :id]
       CivoCLI::Config.set_api_auth
 
-      instance = Civo::Instance.all.items.detect do |instance|
-        next unless instance.id == id || instance.hostname == id
-        instance
-      end
+      instance = detect_instance_id(id)
+
       Civo::Instance.move_ip(id: instance.id, ip: ip_address)
       puts "        Moved public IP #{ip_address} to instance #{instance.hostname}"
       rescue Flexirest::HTTPException => e
@@ -305,10 +281,7 @@ module CivoCLI
       # {ENV["CIVO_API_VERSION"] || "1"}/instances/:id/firewall", requires: [:firewall_id, :id]
       CivoCLI::Config.set_api_auth
 
-      instance = Civo::Instance.all.items.detect do |instance|
-        next unless instance.id == id || instance.hostname == id
-        instance
-      end
+      instance = detect_instance_id(id)
 
       Civo::Instance.firewall(id: instance.id, firewall_id: firewall_id)
       puts "        Set #{instance.hostname.colorize(:green)} to use firewall '#{firewall_id.colorize(:yellow)}'"
@@ -319,5 +292,13 @@ module CivoCLI
     end
 
     default_task :list
+
+    private
+    def detect_instance_id(id)
+      instance = Civo::Instance.all.items.detect do |instance|
+        next unless instance.id == id || instance.hostname == id
+        instance
+      end
+    end
   end
 end
