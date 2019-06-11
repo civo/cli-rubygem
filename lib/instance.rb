@@ -84,10 +84,12 @@ module CivoCLI
     option :hostname, :required => true
     option :size, :required => true
     option :region, :default => 'lon1'
-    option :public_ip, :default => true, :type => :boolean
+    option :public_ip, :default => 'create'
     option :initial_user, :default => "civo"
     option :template
     option :snapshot
+    option :ssh_key
+    option :tags
     def create(*args)
       # {ENV["CIVO_API_VERSION"] || "1"}/instances", requires: [:hostname, :size, :region],
       # defaults: {public_ip: true, initial_user: "civo"}
@@ -99,11 +101,11 @@ module CivoCLI
       end
       
       if options[:template]
-        Civo::Instance.create(hostname: options[:hostname], size: options[:size], template: options[:template], region: options[:region])
+        Civo::Instance.create(hostname: options[:hostname], size: options[:size], template: options[:template], region: options[:region], ssh_key: options[:ssh_key], tags: options[:tags])
       end
 
       if options[:snapshot]
-      Civo::Instance.create(hostname: options[:hostname], size: options[:size], snapshot_id: options[:snapshot], region: options[:region])
+      Civo::Instance.create(hostname: options[:hostname], size: options[:size], snapshot_id: options[:snapshot], region: options[:region], ssh_key: options[:ssh_key], tags: options[:tags])
       end
       
       puts "        Created instance #{options[:hostname].colorize(:green)}"
