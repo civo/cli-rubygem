@@ -296,10 +296,21 @@ module CivoCLI
     default_task :list
 
     private
+
     def detect_instance_id(id)
-      instance = Civo::Instance.all.items.detect do |instance|
-        next unless instance.id == id || instance.hostname == id
-        instance
+      result = []
+      Civo::Instance.all.items.each do |instance|
+        result << instance
+      end
+      result.select! {|instance| instance.hostname.include?(id) }
+      
+      if result.count == 0
+        puts "No instances found for '#{id}'. Please check your query."
+        exit 1
+      elsif result.count > 1
+        puts "Multiple possible instances found for '#{id}'. Please try with a more specific query."
+        exit 1
+      else result[0]
       end
     end
   end
