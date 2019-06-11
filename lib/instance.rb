@@ -286,7 +286,7 @@ module CivoCLI
       instance = detect_instance_id(id)
 
       Civo::Instance.firewall(id: instance.id, firewall_id: firewall_id)
-      puts "        Sfet #{instance.hostname.colorize(:green)} to use firewall '#{firewall_id.colorize(:yellow)}'"
+      puts "        Set #{instance.hostname.colorize(:green)} to use firewall '#{firewall_id.colorize(:yellow)}'"
 
       rescue Flexirest::HTTPException => e
       puts e.result.reason.colorize(:red)
