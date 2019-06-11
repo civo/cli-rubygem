@@ -247,7 +247,7 @@ module CivoCLI
       instance = detect_instance_id(id)
 
       Civo::Instance.upgrade(id: instance.id, size: new_size)
-      puts "        Resizing #{instance.hostname.colorize(:green)} to #{new_size}.colorize(:red). Use 'civo instance show #{instance.hostname}' to see the current status."
+      puts "        Resizing #{instance.hostname.colorize(:green)} to #{new_size.colorize(:red)}. Use 'civo instance show #{instance.hostname}' to see the current status."
       
       rescue Flexirest::HTTPException => e
       puts e.result.reason.colorize(:red)
@@ -286,7 +286,7 @@ module CivoCLI
       instance = detect_instance_id(id)
 
       Civo::Instance.firewall(id: instance.id, firewall_id: firewall_id)
-      puts "        Set #{instance.hostname.colorize(:green)} to use firewall '#{firewall_id.colorize(:yellow)}'"
+      puts "        Sfet #{instance.hostname.colorize(:green)} to use firewall '#{firewall_id.colorize(:yellow)}'"
 
       rescue Flexirest::HTTPException => e
       puts e.result.reason.colorize(:red)
