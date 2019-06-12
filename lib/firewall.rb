@@ -71,9 +71,9 @@ module CivoCLI
       rules = Civo::FirewallRule.all(firewall_id: firewall_id)
       rows = []
       rules.each do |rule|
-        rows << [rule.id, rule.protocol, rule.start_port, rule.end_port, rule.cidr.items.join(", "), rule.label]
+        rows << [rule.id, rule.protocol, rule.start_port, rule.end_port, rule.direction, rule.cidr.items.join(", "), rule.label]
       end
-      puts Terminal::Table.new title: "Firewall rules for #{firewall_id}", headings: ['ID', 'Protocol', 'Start Port', 'End Port', 'CIDR', 'Label'], rows: rows
+      puts Terminal::Table.new title: "Firewall rules for #{firewall_id}", headings: ['ID', 'Protocol', 'Start Port', 'End Port', 'Direction', 'CIDR', 'Label'], rows: rows
       
       rescue Flexirest::HTTPException => e
       puts e.result.reason.colorize(:red)
