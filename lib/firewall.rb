@@ -5,7 +5,7 @@ module CivoCLI
       CivoCLI::Config.set_api_auth
 
       Civo::Firewall.create(name: firewall_name)
-      puts "        Created firewall #{firewall_name.colorize(:green)}"
+      puts "Created firewall #{firewall_name.colorize(:green)}"
     rescue Flexirest::HTTPException => e
       puts e.result.reason.colorize(:red)
       exit 1
@@ -28,13 +28,13 @@ module CivoCLI
     def remove(firewall_ID)
       CivoCLI::Config.set_api_auth
       Civo::Firewall.remove(id: firewall_ID)
-      puts "        Removed firewall #{firewall_ID.colorize(:red)}"
+      puts "Removed firewall #{firewall_ID.colorize(:red)}"
     rescue Flexirest::HTTPException => e
       puts e.result.reason.colorize(:red)
       exit 1
     end
 
-    desc "new_rule", "Create new rule on firewall firewall_name called rule_name with required arguments"
+    desc "new-rule", "Create new rule on firewall firewall_id called rule_name with required arguments"
     option :firewall_id, required: true
     option :protocol, default: 'tcp'
     option :start_port, required: true
@@ -51,13 +51,13 @@ module CivoCLI
       if options[:end_port]
         Civo::FirewallRule.create(firewall_id: options[:firewall_id], start_port: options[:start_port], end_port: options[:end_port], cidr: options[:cidr], direction: options[:direction], label: options[:label])
       end
-      puts "        New rule" + (options[:label].nil? ? "" : " #{options[:label].colorize(:green)}") + " created"
+      puts "New rule" + (options[:label].nil? ? "" : " #{options[:label].colorize(:green)}") + " created"
     rescue Flexirest::HTTPException => e
       puts e.result.reason.colorize(:red)
       exit 1
     end
 
-    desc "list_rules firewall_id", "Lists all active rules for firewall ID provided"
+    desc "list-rules firewall_id", "Lists all active rules for firewall ID provided"
     def list_rules(firewall_id)
       CivoCLI::Config.set_api_auth
       rules = Civo::FirewallRule.all(firewall_id: firewall_id)
@@ -71,12 +71,12 @@ module CivoCLI
       exit 1
     end
 
-    desc "delete_rule firewall_id rule_id", "Deletes rule with rule_id from firewall with firewall_id"
+    desc "delete-rule firewall_id rule_id", "Deletes rule with rule_id from firewall with firewall_id"
     def delete_rule(firewall_id, rule_id)
       CivoCLI::Config.set_api_auth
 
       Civo::FirewallRule.remove(firewall_id: firewall_id, id: rule_id)
-      puts "        Removed Firewall rule #{rule_id.colorize(:red)}"
+      puts "Removed Firewall rule #{rule_id.colorize(:red)}"
     rescue Flexirest::HTTPException => e
       puts e.result.reason.colorize(:red)
       exit 1
