@@ -26,6 +26,7 @@ module CivoCLI
     end
 
     def self.delete_apikey(key)
+      set_current_apikey_name(key)
       current["apikeys"].delete(key)
       if get_current_apikey_name == key
         if get_apikeys.any?
@@ -50,7 +51,7 @@ module CivoCLI
     def self.current
       @config ||= JSON.parse(File.read(filename))
     rescue
-      @config = {}
+      @config = {"apikeys" => {}, "meta" => {"current_apikey" => nil, "default_region" => "lon1", "latest_release_check" => "2017-06-01T15:35:42+01:00", "url" => "https://api.civo.com"}}
     end
 
     def self.reset
