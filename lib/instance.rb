@@ -13,7 +13,7 @@ module CivoCLI
     end
 
     if CivoCLI::Config.get_meta("admin")
-      desc "high_cpu", "list high CPU using instances"
+      desc "high-cpu", "list high CPU using instances"
       def high_cpu
         # {ENV["CIVO_API_VERSION"] || "1"}/instances/high_cpu"
         CivoCLI::Config.set_api_auth
@@ -168,9 +168,9 @@ module CivoCLI
       puts e.result.reason.colorize(:red)
       exit 1
     end
-    map "hard_reboot" => "reboot"
+    map "hard-reboot" => "reboot"
 
-    desc "soft_reboot ID/HOSTNAME", "soft-reboots instance with ID entered"
+    desc "soft-reboot ID/HOSTNAME", "soft-reboots instance with ID entered"
     def soft_reboot(id)
       # {ENV["CIVO_API_VERSION"] || "1"}/instances/:id/soft_reboots", requires: [:id]
       CivoCLI::Config.set_api_auth
@@ -233,7 +233,7 @@ module CivoCLI
       exit 1
     end
 
-    desc "move_ip targetID IP_Address", "move a public IP_Address to target instance"
+    desc "move-ip targetID IP_Address", "move a public IP_Address to target instance"
     def move_ip(id, ip_address)
       # {ENV["CIVO_API_VERSION"] || "1"}/instances/:id/ip/:ip", requires: [:ip, :id]
       CivoCLI::Config.set_api_auth
