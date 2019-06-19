@@ -6,8 +6,8 @@ require "civo_cli/version"
 Gem::Specification.new do |spec|
   spec.name          = "civo_cli"
   spec.version       = CivoCLI::VERSION
-  spec.authors       = ["Andy Jeffries", "Absolute Devops Ltd"]
-  spec.email         = ["andy@absolutedevops.io", "hello@civo.com"]
+  spec.authors       = ["Andy Jeffries", "Kai Hoffman", "Civo Ltd"]
+  spec.email         = ["andy@civo.com", "kai@civo.com", "hello@civo.com"]
 
   spec.summary       = %q{CLI for interacting with Civo.com}
   spec.description   = %q{The official command line client for interacting with Civo's API}
