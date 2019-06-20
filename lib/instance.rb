@@ -80,7 +80,7 @@ module CivoCLI
       exit 1
     end
 
-    desc "create [HOSTNAME] [--options]", "create a new instance with specified hostname, instance size, template/snapshot ID. Optional: region, public_ip (true or false), initial user"
+    desc "create [HOSTNAME] [...]", "create a new instance with specified hostname and provided options"
     option :size, default: 'g2.small', banner: 'instance_size_code'
     option :region, default: 'lon1', banner: 'civo_region'
     option :public_ip, default: 'true', banner: 'true | false | from [instance_id]'
@@ -91,13 +91,16 @@ module CivoCLI
     option :tags, banner: "'tag1 tag2 tag3...'"
     long_desc <<-LONGDESC
       Create a new instance with hostname (randomly assigned if blank), instance size (default: g2.small),
-      \x5image template or snapshot ID (default: Ubuntu 18.04).
+      \x5template or snapshot ID (default: Ubuntu 18.04 template).
       \x5\x5Optional parameters are as follows:
-      \x5 --public_ip=<true | false | from> - 'true' if blank
+      \x5 --size=<instance_size> - 'g2.small' if blank. List of sizes and codes to use can be found through `civo sizes`
+      \x5 --template=<template_id> - Ubuntu 18.04 if blank. Template_id is from a list of templates at `civo templates`
+      \x5 --snapshot=<snapshot_id> - Snapshot ID of a previously-made snapshot. Leave blank if using a template.
+      \x5 --public_ip=<true | false | from=instance_id> - 'true' if blank. 'from' requires an existing instance ID configured with a public IP address to move to this new instance.
       \x5 --initial_user=<yourusername> - 'civo' if blank
-      \x5 --ssh_key=<civo_ssh_uuid> for specifying a SSH login key for the default user. Random password assigned if blank, visible by calling `civo instance show hostname`
+      \x5 --ssh_key=<ssh_key_id> - for specifying a SSH login key for the default user. Random password assigned if blank, visible by calling `civo instance show hostname`
       \x5 --region=<regioncode> from available Civo regions. Randomly assigned if blank
-      \x5 --tags=<'tag1 tag2 tag3...'>
+      \x5 --tags=<'tag1 tag2 tag3...'> - space-separated tag(s)
     LONGDESC
     def create(hostname = CivoCLI::NameGenerator.create, *args)
       # {ENV["CIVO_API_VERSION"] || "1"}/instances", requires: [:hostname, :size, :region],
@@ -132,9 +135,13 @@ module CivoCLI
       exit 1
     end
 
-    desc "update ID/HOSTNAME [--name] [--notes]", "update details of instance. Use --hostname=new_name, --notes='notes' to specify update"
+    desc "update ID/HOSTNAME [--name] [--notes]", "update details of instance."
+
     option :name
     option :notes
+    long_desc <<-LONGDESC
+      Use --name=new_host_name, --notes='free text notes string' to specify the details you wish to update.
+    LONGDESC
     def update(id)
       CivoCLI::Config.set_api_auth
       instance = detect_instance_id(id)
