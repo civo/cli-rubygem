@@ -88,7 +88,7 @@ module CivoCLI
     option :template, lazy_default: '811a8dfb-8202-49ad-b1ef-1e6320b20497', banner: 'template_id'
     option :snapshot, banner: 'snapshot_id'
     option :ssh_key, banner: 'ssh_key_id'
-    option :tags, banner: "'tag1, tag2, tag3,...'"
+    option :tags, banner: "'tag1 tag2 tag3...'"
     long_desc <<-LONGDESC
       Create a new instance with hostname (randomly assigned if blank), instance size (default: g2.small),
       \x5image template or snapshot ID (default: Ubuntu 18.04).
@@ -97,7 +97,7 @@ module CivoCLI
       \x5 --initial_user=<yourusername> - 'civo' if blank
       \x5 --ssh_key=<civo_ssh_uuid> for specifying a SSH login key for the default user. Random password assigned if blank, visible by calling `civo instance show hostname`
       \x5 --region=<regioncode> from available Civo regions. Randomly assigned if blank
-      \x5 --tags=<'tag1, tag2, tag3,...'>
+      \x5 --tags=<'tag1 tag2 tag3...'>
     LONGDESC
     def create(hostname = CivoCLI::NameGenerator.create, *args)
       # {ENV["CIVO_API_VERSION"] || "1"}/instances", requires: [:hostname, :size, :region],
