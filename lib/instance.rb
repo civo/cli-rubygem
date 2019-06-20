@@ -80,7 +80,7 @@ module CivoCLI
       exit 1
     end
 
-    desc "create [hostname] [--options]", "create a new instance with specified hostname, instance size, template/snapshot ID. Optional: region, public_ip (true or false), initial user"
+    desc "create [HOSTNAME] [--options]", "create a new instance with specified hostname, instance size, template/snapshot ID. Optional: region, public_ip (true or false), initial user"
     option :size, default: 'g2.small', banner: 'instance_size_code'
     option :region, default: 'lon1', banner: 'civo_region'
     option :public_ip, default: 'true', banner: 'true | false | from [instance_id]'
@@ -120,7 +120,7 @@ module CivoCLI
       exit 1
     end
 
-    desc "tags ID 'tag1 tag2 tag3...'", "retag instance by ID (input no tags to clear all tags)"
+    desc "tags ID/HOSTNAME 'tag1 tag2 tag3...'", "retag instance by ID (input no tags to clear all tags)"
     def tags(id, newtags = nil)
       CivoCLI::Config.set_api_auth
       instance = detect_instance_id(id)
@@ -132,7 +132,7 @@ module CivoCLI
       exit 1
     end
 
-    desc "update ID/HOSTNAME [--name=new_hostname] [--notes='txt']", "update details of instance. Use --hostname=new_name, --notes='notes' to specify update"
+    desc "update ID/HOSTNAME [--name] [--notes]", "update details of instance. Use --hostname=new_name, --notes='notes' to specify update"
     option :name
     option :notes
     def update(id)
@@ -228,7 +228,7 @@ module CivoCLI
       exit 1
     end
 
-    desc "upgrade ID new-size", "Upgrade instance with ID to size provided (see civo sizes for size names)"
+    desc "upgrade ID/HOSTNAME new-size", "Upgrade instance with ID to size provided (see civo sizes for size names)"
     def upgrade(id, new_size)
       # {ENV["CIVO_API_VERSION"] || "1"}/instances/:id/resize", requires: [:size, :id]
       CivoCLI::Config.set_api_auth
@@ -242,7 +242,7 @@ module CivoCLI
       exit 1
     end
 
-    desc "move-ip targetID IP_Address", "move a public IP_Address to target instance"
+    desc "move-ip ID/HOSTNAME IP_Address", "move a public IP_Address to target instance"
     def move_ip(id, ip_address)
       # {ENV["CIVO_API_VERSION"] || "1"}/instances/:id/ip/:ip", requires: [:ip, :id]
       CivoCLI::Config.set_api_auth
