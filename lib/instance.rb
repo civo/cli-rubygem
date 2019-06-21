@@ -122,7 +122,7 @@ module CivoCLI
 
       if options[:wait]
         print "Building new instance #{hostname}: "
-        CivoCLI::Spinner.spin
+        CivoCLI::Spinner.spin(hostname)
         puts "\b DONE!"
         show(hostname)
       else
