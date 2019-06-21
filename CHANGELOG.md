@@ -3,10 +3,18 @@ All notable changes to the Civo CLI will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.2.2] - 2019-06.19
+## [0.2.3] - 2019-06-21
+### Added
+- Instance name generator
+- Ability to start instances with default options and generated name
+
+### Changed
+- README.md to reflect new scope of commands and abilities
+- Help texts in instance methods to display long descriptions where appropriate
+
+## [0.2.2] - 2019-06-19
 ### Fixes
-- Fixes .json file check and removes file check at runtime ("if __FILE__ == $0
-").
+- Fixes .json file check and removes file check at runtime ("if __FILE__ == $0").
 
 ## [0.2.1] - 2019-06-19
 ### Added
