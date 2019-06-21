@@ -80,17 +80,29 @@ module CivoCLI
       exit 1
     end
 
-    desc "create --hostname=host_name --size=instance_size [--template=template_id ] [--snapshot=snapshot_id]", "create a new instance with specified hostname, instance size, template/snapshot ID. Optional: region, public_ip (true or false), initial user"
-    option :hostname, required: true
-    option :size, required: true
-    option :region, default: 'lon1'
-    option :public_ip, default: 'create'
-    option :initial_user, default: "civo"
-    option :template
-    option :snapshot
-    option :ssh_key_id
-    option :tags
-    def create(*args)
+    desc "create [HOSTNAME] [...]", "create a new instance with specified hostname and provided options"
+    option :size, default: 'g2.small', banner: 'instance_size_code'
+    option :region, default: 'lon1', banner: 'civo_region'
+    option :public_ip, default: 'true', banner: 'true | false | from [instance_id]'
+    option :initial_user, default: 'civo', banner: 'username', aliases: '--user'
+    option :template, lazy_default: '811a8dfb-8202-49ad-b1ef-1e6320b20497', banner: 'template_id'
+    option :snapshot, banner: 'snapshot_id'
+    option :ssh_key, banner: 'ssh_key_id'
+    option :tags, banner: "'tag1 tag2 tag3...'"
+    long_desc <<-LONGDESC
+      Create a new instance with hostname (randomly assigned if blank), instance size (default: g2.small),
+      \x5template or snapshot ID (default: Ubuntu 18.04 template).
+      \x5\x5Optional parameters are as follows:
+      \x5 --size=<instance_size> - 'g2.small' if blank. List of sizes and codes to use can be found through `civo sizes`
+      \x5 --template=<template_id> - Ubuntu 18.04 if blank. Template_id is from a list of templates at `civo templates`
+      \x5 --snapshot=<snapshot_id> - Snapshot ID of a previously-made snapshot. Leave blank if using a template.
+      \x5 --public_ip=<true | false | from=instance_id> - 'true' if blank. 'from' requires an existing instance ID configured with a public IP address to move to this new instance.
+      \x5 --initial_user=<yourusername> - 'civo' if blank
+      \x5 --ssh_key=<ssh_key_id> - for specifying a SSH login key for the default user. Random password assigned if blank, visible by calling `civo instance show hostname`
+      \x5 --region=<regioncode> from available Civo regions. Randomly assigned if blank
+      \x5 --tags=<'tag1 tag2 tag3...'> - space-separated tag(s)
+    LONGDESC
+    def create(hostname = CivoCLI::NameGenerator.create, *args)
       # {ENV["CIVO_API_VERSION"] || "1"}/instances", requires: [:hostname, :size, :region],
       # defaults: {public_ip: true, initial_user: "civo"}
       CivoCLI::Config.set_api_auth
@@ -99,19 +111,19 @@ module CivoCLI
         exit 1
       end
       if options[:template]
-        Civo::Instance.create(hostname: options[:hostname], size: options[:size], template: options[:template], initial_user: options[:initial_user], region: options[:region], ssh_key_id: options[:ssh_key_id], tags: options[:tags])
+        Civo::Instance.create(hostname: hostname, size: options[:size], template: options[:template], initial_user: options[:initial_user], region: options[:region], ssh_key_id: options[:ssh_key], tags: options[:tags])
       end
 
       if options[:snapshot]
-        Civo::Instance.create(hostname: options[:hostname], size: options[:size], snapshot_id: options[:snapshot], initial_user: options[:initial_user], region: options[:region], ssh_key_id: options[:ssh_key_id], tags: options[:tags])
+        Civo::Instance.create(hostname: hostname, size: options[:size], snapshot_id: options[:snapshot], initial_user: options[:initial_user], region: options[:region], ssh_key_id: options[:ssh_key], tags: options[:tags])
       end
-      puts "Created instance #{options[:hostname].colorize(:green)}"
+      puts "Created instance #{hostname.colorize(:green)}"
     rescue Flexirest::HTTPException => e
       puts e.result.reason.colorize(:red)
       exit 1
     end
 
-    desc "tags ID 'tag1 tag2 tag3...'", "retag instance by ID (input no tags to clear all tags)"
+    desc "tags ID/HOSTNAME 'tag1 tag2 tag3...'", "retag instance by ID (input no tags to clear all tags)"
     def tags(id, newtags = nil)
       CivoCLI::Config.set_api_auth
       instance = detect_instance_id(id)
@@ -123,9 +135,13 @@ module CivoCLI
       exit 1
     end
 
-    desc "update ID/HOSTNAME [--name=new_hostname] [--notes='txt']", "update details of instance. Use --hostname=new_name, --notes='notes' to specify update"
+    desc "update ID/HOSTNAME [--name] [--notes]", "update details of instance"
+
     option :name
     option :notes
+    long_desc <<-LONGDESC
+      Use --name=new_host_name, --notes='free text notes string' to specify the details you wish to update.
+    LONGDESC
     def update(id)
       CivoCLI::Config.set_api_auth
       instance = detect_instance_id(id)
@@ -219,7 +235,7 @@ module CivoCLI
       exit 1
     end
 
-    desc "upgrade ID new-size", "Upgrade instance with ID to size provided (see civo sizes for size names)"
+    desc "upgrade ID/HOSTNAME new-size", "Upgrade instance with ID to size provided (see civo sizes for size names)"
     def upgrade(id, new_size)
       # {ENV["CIVO_API_VERSION"] || "1"}/instances/:id/resize", requires: [:size, :id]
       CivoCLI::Config.set_api_auth
@@ -233,7 +249,7 @@ module CivoCLI
       exit 1
     end
 
-    desc "move-ip targetID IP_Address", "move a public IP_Address to target instance"
+    desc "move-ip ID/HOSTNAME IP_Address", "move a public IP_Address to target instance"
     def move_ip(id, ip_address)
       # {ENV["CIVO_API_VERSION"] || "1"}/instances/:id/ip/:ip", requires: [:ip, :id]
       CivoCLI::Config.set_api_auth
