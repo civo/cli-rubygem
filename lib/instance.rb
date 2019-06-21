@@ -135,7 +135,7 @@ module CivoCLI
       exit 1
     end
 
-    desc "update ID/HOSTNAME [--name] [--notes]", "update details of instance."
+    desc "update ID/HOSTNAME [--name] [--notes]", "update details of instance"
 
     option :name
     option :notes
