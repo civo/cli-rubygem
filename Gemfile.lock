@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    civo_cli (0.2.1)
+    civo_cli (0.2.3)
       civo (>= 1.1.14)
       colorize
       json
@@ -33,7 +33,7 @@ GEM
     faraday (0.15.4)
       multipart-post (>= 1.2, < 3)
     ffi (1.10.0)
-    flexirest (1.7.7)
+    flexirest (1.7.8)
       activesupport
       crack
       faraday
@@ -105,7 +105,7 @@ GEM
       parslet (~> 1.8.0)
     tzinfo (1.2.5)
       thread_safe (~> 0.1)
-    unicode-display_width (1.4.1)
+    unicode-display_width (1.6.0)
     webmock (3.5.1)
       addressable (>= 2.3.6)
       crack (>= 0.3.2)
