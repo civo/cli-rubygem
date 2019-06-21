@@ -89,6 +89,7 @@ module CivoCLI
     option :snapshot, banner: 'snapshot_id'
     option :ssh_key, banner: 'ssh_key_id'
     option :tags, banner: "'tag1 tag2 tag3...'"
+    option :wait, type: :boolean
     long_desc <<-LONGDESC
       Create a new instance with hostname (randomly assigned if blank), instance size (default: g2.small),
       \x5template or snapshot ID (default: Ubuntu 18.04 template).
@@ -101,6 +102,7 @@ module CivoCLI
       \x5 --ssh_key=<ssh_key_id> - for specifying a SSH login key for the default user. Random password assigned if blank, visible by calling `civo instance show hostname`
       \x5 --region=<regioncode> from available Civo regions. Randomly assigned if blank
       \x5 --tags=<'tag1 tag2 tag3...'> - space-separated tag(s)
+      \x5 --wait - wait for build to complete and show status. Off by default.
     LONGDESC
     def create(hostname = CivoCLI::NameGenerator.create, *args)
       # {ENV["CIVO_API_VERSION"] || "1"}/instances", requires: [:hostname, :size, :region],
@@ -117,7 +119,15 @@ module CivoCLI
       if options[:snapshot]
         Civo::Instance.create(hostname: hostname, size: options[:size], snapshot_id: options[:snapshot], initial_user: options[:initial_user], region: options[:region], ssh_key_id: options[:ssh_key], tags: options[:tags])
       end
-      puts "Created instance #{hostname.colorize(:green)}"
+
+      if options[:wait]
+        print "Building new instance #{hostname}: "
+        CivoCLI::Spinner.spin
+        puts "\b DONE!"
+        show(hostname)
+      else
+        puts "Created instance #{hostname.colorize(:green)}"
+      end
     rescue Flexirest::HTTPException => e
       puts e.result.reason.colorize(:red)
       exit 1
