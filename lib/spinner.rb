@@ -1,31 +1,53 @@
 module CivoCLI
   class Spinner
-    @spinner_shapes = ['|', '/', '-', '\\'].freeze
-    @counter = 20
-    @spinner_frame = 0
+    SPINNER_SHAPES = ['|', '/', '-', '\\'].freeze
+    DELAY = 0.1
 
-    def self.detect_build_status(id)
-      result = []
-      Civo::Instance.all.items.each do |instance|
-        result << instance
-      end
-      result.select! { |instance| instance.hostname.include?(id) }
-      result[0].status
+    attr_accessor :data
+
+    def self.spin(data = {}, &block)
+      new(data, &block).spin
     end
 
-    def self.spin(id)
-      loop do
-        sleep(0.1)
-        print @spinner_shapes[@spinner_frame] + "\b"
+    def initialize(data = {}, &block)
+      @data = data
+      @spinner_frame = 0
+      @counter = 20
+      @total = 240 / DELAY
+      @block = block
+      spin
+    end
+
+    def method_missing(name)
+      @data[name] if @data.keys.include?(name)
+    end
+
+    def [](key)
+      @data[key] if @data.keys.include?(key)
+    end
+
+    def []=(key, value)
+      @data[key] = value
+    end
+
+    def spin
+      while(@total > 0) do
+        sleep(DELAY)
+        print SPINNER_SHAPES[@spinner_frame] + "\b"
         @spinner_frame += 1
-        @spinner_frame = 0 if @spinner_frame == @spinner_shapes.length
+        @spinner_frame = 0 if @spinner_frame == SPINNER_SHAPES.length
         @counter -= 1
-        next unless @counter.zero?
-        break if detect_build_status(id) == 'ACTIVE'
+        @total -= 1
+        next unless @counter == 0
 
         @counter = 20
+        if result = @block.call(self)
+          self.data[:result] = result
+          return self
+        end
+
       end
-    rescue Interrupt, IRB::Abort
+    rescue Interrupt
       print "\b\b" + "Exiting.\n"
       exit 1
     end

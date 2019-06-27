@@ -105,26 +105,31 @@ module CivoCLI
       \x5 --wait - wait for build to complete and show status. Off by default.
     LONGDESC
     def create(hostname = CivoCLI::NameGenerator.create, *args)
-      # {ENV["CIVO_API_VERSION"] || "1"}/instances", requires: [:hostname, :size, :region],
-      # defaults: {public_ip: true, initial_user: "civo"}
       CivoCLI::Config.set_api_auth
       if options[:template] && options[:snapshot] || !options[:template] && !options[:snapshot]
         puts "Please provide either template OR snapshot ID".colorize(:red)
         exit 1
       end
-      if options[:template]
-        Civo::Instance.create(hostname: hostname, size: options[:size], template: options[:template], initial_user: options[:initial_user], region: options[:region], ssh_key_id: options[:ssh_key], tags: options[:tags])
-      end
 
-      if options[:snapshot]
-        Civo::Instance.create(hostname: hostname, size: options[:size], snapshot_id: options[:snapshot], initial_user: options[:initial_user], region: options[:region], ssh_key_id: options[:ssh_key], tags: options[:tags])
+      if options[:template]
+        @instance = Civo::Instance.create(hostname: hostname, size: options[:size], template: options[:template], initial_user: options[:initial_user], region: options[:region], ssh_key_id: options[:ssh_key], tags: options[:tags])
+      elsif options[:snapshot]
+        @instance = Civo::Instance.create(hostname: hostname, size: options[:size], snapshot_id: options[:snapshot], initial_user: options[:initial_user], region: options[:region], ssh_key_id: options[:ssh_key], tags: options[:tags])
       end
 
       if options[:wait]
         print "Building new instance #{hostname}: "
-        CivoCLI::Spinner.spin(hostname)
-        puts "\b DONE!"
-        show(hostname)
+
+        spinner = CivoCLI::Spinner.spin(instance: @instance) do |s|
+          Civo::Instance.all.items.each do |instance|
+            if instance.id == @instance.id && instance.status == 'ACTIVE'
+              s[:final_instance] = instance
+            end
+          end
+          s[:final_instance]
+        end
+
+        puts "\b Done\nCreated instance #{spinner[:final_instance].hostname.colorize(:green)} - #{spinner[:final_instance].initial_user}@#{spinner[:final_instance].public_ip}"
       else
         puts "Created instance #{hostname.colorize(:green)}"
       end
