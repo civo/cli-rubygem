@@ -92,28 +92,42 @@ module CivoCLI
       exit 1
     end
 
-    desc "update ID/HOSTNAME [--name] [--notes]", "update details of instance"
+    desc "rename ID/NAME [--name]", "rename Kubernetes cluster"
     option :name
-    option :notes
     long_desc <<-LONGDESC
-      Use --name=new_host_name, --notes='free text notes string' to specify the details you wish to update.
+      Use --name=new_host_name to specify the new name you wish to use.
     LONGDESC
-    def update(id)
+    def rename(id)
       CivoCLI::Config.set_api_auth
-      instance = detect_instance_id(id)
+      cluster = detect_cluster_id(id)
 
       if options[:name]
-        Civo::Instance.update(id: instance.id, hostname: options[:name])
-        puts "Instance #{instance.id} now named #{options[:name].colorize(:green)}"
-      end
-      if options[:notes]
-        Civo::Instance.update(id: instance.id, notes: options[:notes])
-        puts "Instance #{instance.id} notes are now: #{options[:notes].colorize(:green)}"
+        Civo::Kubernetes.update(id: cluster.id, name: options[:name])
+        puts "Kubernetes cluster #{cluster.id} is now named #{options[:name].colorize(:green)}"
       end
     rescue Flexirest::HTTPException => e
       puts e.result.reason.colorize(:red)
       exit 1
     end
+
+    desc "scale ID/NAME [--nodes]", "rescale the Kubernetes cluster to a new node count"
+    option :nodes
+    long_desc <<-LONGDESC
+      Use --nodes=count to specify the new number of nodes to run.
+    LONGDESC
+    def scale(id)
+      CivoCLI::Config.set_api_auth
+      cluster = detect_cluster_id(id)
+
+      if options[:nodes]
+        Civo::Kubernetes.update(id: cluster.id, num_target_nodes: options[:nodes])
+        puts "Kubernetes cluster #{cluster.name} will now have #{options[:nodes].colorize(:green)} nodes"
+      end
+    rescue Flexirest::HTTPException => e
+      puts e.result.reason.colorize(:red)
+      exit 1
+    end
+    map "rescale" => "scale"
 
     desc "remove ID/NAME", "removes an entire Kubernetes cluster with ID/name entered (use with caution!)"
     def remove(id)
@@ -122,121 +136,6 @@ module CivoCLI
 
       puts "Removing Kubernetes cluster #{cluster.name.colorize(:red)}"
       cluster.remove
-    rescue Flexirest::HTTPException => e
-      puts e.result.reason.colorize(:red)
-      exit 1
-    end
-
-    desc "reboot ID/HOSTNAME", "reboots instance with ID/hostname entered"
-    def reboot(id)
-      # {ENV["CIVO_API_VERSION"] || "1"}/instances/:id/reboots", requires: [:id]
-      CivoCLI::Config.set_api_auth
-
-      instance = detect_instance_id(id)
-      puts "Rebooting #{instance.hostname.colorize(:red)}. Use 'civo instance show #{instance.hostname}' to see the current status."
-      instance.reboot
-    rescue Flexirest::HTTPException => e
-      puts e.result.reason.colorize(:red)
-      exit 1
-    end
-    map "hard-reboot" => "reboot"
-
-    desc "soft-reboot ID/HOSTNAME", "soft-reboots instance with ID entered"
-    def soft_reboot(id)
-      # {ENV["CIVO_API_VERSION"] || "1"}/instances/:id/soft_reboots", requires: [:id]
-      CivoCLI::Config.set_api_auth
-
-      instance = detect_instance_id(id)
-      puts "Soft-rebooting #{instance.hostname.colorize(:red)}. Use 'civo instance show #{instance.hostname}' to see the current status."
-      instance.soft_reboot
-    rescue Flexirest::HTTPException => e
-      puts e.result.reason.colorize(:red)
-      exit 1
-    end
-
-    desc "console ID/HOSTNAME", "outputs a URL for a web-based console for instance with ID provided"
-    def console(id)
-      # {ENV["CIVO_API_VERSION"] || "1"}/instances/:id/console", requires: [:id]
-      CivoCLI::Config.set_api_auth
-      instance = detect_instance_id(id)
-      puts "Access #{instance.hostname.colorize(:green)} at #{instance.console.url}"
-    rescue Flexirest::HTTPException => e
-      puts e.result.reason.colorize(:red)
-      exit 1
-    end
-
-    desc "stop ID/HOSTNAME", "shuts down the instance with ID provided"
-    def stop(id)
-      # {ENV["CIVO_API_VERSION"] || "1"}/instances/:id/stop", requires: [:id]
-      CivoCLI::Config.set_api_auth
-      instance = detect_instance_id(id)
-      puts "Stopping #{instance.hostname.colorize(:red)}. Use 'civo instance show #{instance.hostname}' to see the current status."
-      Civo::Instance.stop(id: instance.id)
-    rescue Flexirest::HTTPException => e
-      puts e.result.reason.colorize(:red)
-      exit 1
-    end
-
-    desc "start ID/HOSTNAME", "starts a stopped instance with ID provided"
-    def start(id)
-      # {ENV["CIVO_API_VERSION"] || "1"}/instances/:id/start", requires: [:id]
-      CivoCLI::Config.set_api_auth
-
-      instance = detect_instance_id(id)
-      puts "Starting #{instance.hostname.colorize(:green)}. Use 'civo instance show #{instance.hostname}' to see the current status."
-      instance.start
-    rescue Flexirest::HTTPException => e
-      puts e.result.reason.colorize(:red)
-      exit 1
-    end
-
-    desc "upgrade ID/HOSTNAME new-size", "Upgrade instance with ID to size provided (see civo sizes for size names)"
-    def upgrade(id, new_size)
-      # {ENV["CIVO_API_VERSION"] || "1"}/instances/:id/resize", requires: [:size, :id]
-      CivoCLI::Config.set_api_auth
-
-      instance = detect_instance_id(id)
-
-      Civo::Instance.upgrade(id: instance.id, size: new_size)
-      puts "Resizing #{instance.hostname.colorize(:green)} to #{new_size.colorize(:red)}. Use 'civo instance show #{instance.hostname}' to see the current status."
-    rescue Flexirest::HTTPException => e
-      puts e.result.reason.colorize(:red)
-      exit 1
-    end
-
-    desc "move-ip ID/HOSTNAME IP_Address", "move a public IP_Address to target instance"
-    def move_ip(id, ip_address)
-      # {ENV["CIVO_API_VERSION"] || "1"}/instances/:id/ip/:ip", requires: [:ip, :id]
-      CivoCLI::Config.set_api_auth
-
-      instance = detect_instance_id(id)
-
-      Civo::Instance.move_ip(id: instance.id, ip: ip_address)
-      puts "Moved public IP #{ip_address} to instance #{instance.hostname}"
-    rescue Flexirest::HTTPException => e
-      puts e.result.reason.colorize(:red)
-      exit 1
-    end
-
-    # desc "", ""
-    # def rescue
-    #   # {ENV["CIVO_API_VERSION"] || "1"}/instances/:id/rescue", requires: [:id]
-    # end
-
-    # desc "", ""
-    # def unrescue
-    #   # {ENV["CIVO_API_VERSION"] || "1"}/instances/:id/unrescue", requires: [:id]
-    # end
-
-    desc "firewall ID/HOSTNAME firewall_id", "set instance with ID/HOSTNAME to use firewall with firewall_id"
-    def firewall(id, firewall_id)
-      # {ENV["CIVO_API_VERSION"] || "1"}/instances/:id/firewall", requires: [:firewall_id, :id]
-      CivoCLI::Config.set_api_auth
-
-      instance = detect_instance_id(id)
-
-      Civo::Instance.firewall(id: instance.id, firewall_id: firewall_id)
-      puts "Set #{instance.hostname.colorize(:green)} to use firewall '#{firewall_id.colorize(:yellow)}'"
     rescue Flexirest::HTTPException => e
       puts e.result.reason.colorize(:red)
       exit 1
