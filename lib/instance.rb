@@ -186,6 +186,7 @@ module CivoCLI
       puts e.result.reason.colorize(:red)
       exit 1
     end
+    map "delete" => "remove"
 
     desc "reboot ID/HOSTNAME", "reboots instance with ID/hostname entered"
     def reboot(id)

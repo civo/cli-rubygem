@@ -35,6 +35,10 @@ module CivoCLI
     subcommand "instance", CivoCLI::Instance
     map "instances" => "instance"
 
+    desc "kubernetes", "manage kubernetess"
+    subcommand "kubernetes", CivoCLI::Kubernetes
+    map "k8s" => "kubernetes"
+
     desc "network", "manage networks"
     subcommand "network", CivoCLI::Network
     map "networks" => "network"

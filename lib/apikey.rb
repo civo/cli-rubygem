@@ -28,12 +28,10 @@ module CivoCLI
         if keys.keys.include?(name)
           CivoCLI::Config.delete_apikey(name)
           puts "Removed the API Key #{name.colorize(:green)}"
-        else 
+        else
           puts "The API Key #{name.colorize(:red)} couldn't be found."
           exit 1
         end
-
-
     end
     map "delete" => "remove", "rm" => "remove"
 
@@ -52,6 +50,7 @@ module CivoCLI
         end
       end
     end
+    map "use" => "current"
 
     default_task :list
   end

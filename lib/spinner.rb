@@ -1,4 +1,5 @@
 module CivoCLI
+  print "\033[?25l"
   class Spinner
     SPINNER_SHAPES = ['|', '/', '-', '\\'].freeze
     DELAY = 0.1
@@ -13,7 +14,7 @@ module CivoCLI
       @data = data
       @spinner_frame = 0
       @counter = 20
-      @total = 240 / DELAY
+      @total = 3600 / DELAY
       @block = block
       spin
     end
@@ -31,6 +32,7 @@ module CivoCLI
     end
 
     def spin
+      print "\033[?25l"
       while(@total > 0) do
         sleep(DELAY)
         print SPINNER_SHAPES[@spinner_frame] + "\b"
@@ -43,13 +45,17 @@ module CivoCLI
         @counter = 20
         if result = @block.call(self)
           self.data[:result] = result
+          print "\033[?25h"
           return self
         end
-
       end
+
+      print "\033[?25h"
     rescue Interrupt
       print "\b\b" + "Exiting.\n"
       exit 1
+    ensure
+      print "\033[?25h"
     end
   end
 end
