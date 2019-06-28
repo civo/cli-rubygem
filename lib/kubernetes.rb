@@ -31,8 +31,7 @@ module CivoCLI
         puts "            Status : #{cluster.status.colorize(:red)}"
       end
       puts "           Version : #{cluster.kubernetes_version}"
-      puts "      API Endpoint : #{cluster.kubeconfig[/https:\/\/(\d+.)*:6443/]}"
-      #<Civo::Kubernetes id: "9f1cf43c-a924-468f-baa7-38dbe0e98ff0", name: "chris-edward", version: "1", status: "ACTIVE", num_target_nodes: 3, target_nodes_size: "g2.medium", built_at: "2019-06-27 16:56:25", kubeconfig: "apiVersion: v1\nclusters:\n- cluster:\n    certificate...", kubernetes_version: "0.6.1", created_at: "2019-06-27 16:52:10", instances: #<Flexirest::ResultIterator:0x00007fc43847d958 @_status=nil, @_headers=nil, @items=[#<Civo::Kubernetes hostname: "k8s-node-acf8", size: "g2.medium", region: "lon1", created_at: "2019-06-27 16:52:11", status: "ACTIVE", firewall_id: "fdf99ced-e257-4ddf-9c81-da81a1dea4ff", public_ip: "185.136.234.35">, #<Civo::Kubernetes hostname: "k8s-node-3615", size: "g2.medium", region: "lon1", created_at: "2019-06-27 16:52:11", status: "ACTIVE", firewall_id: "fdf99ced-e257-4ddf-9c81-da81a1dea4ff", public_ip: "185.136.232.85">, #<Civo::Kubernetes hostname: "k8s-master-4f46", size: "g2.medium", region: "lon1", created_at: "2019-06-27 16:52:11", status: "ACTIVE", firewall_id: "fdf99ced-e257-4ddf-9c81-da81a1dea4ff", public_ip: "185.136.232.240">]>>
+      puts "      API Endpoint : #{cluster.api_endpoint}"
 
       puts ""
       rows = []
