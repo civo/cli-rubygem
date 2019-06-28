@@ -8,6 +8,7 @@ Civo CLI is a tool to manage your [Civo.com](https://www.civo.com) account from 
 - [Set-Up](#set-up) 
 - [API Keys](#api-keys)
 - [Instances](#instances)
+- [Kubernetes clusters](#kubernetes-clusters)
 - [Domains and Domain Records](#domains-and-domain-records)
 - [Firewalls](#firewalls)
 - [Networks](#networks)
@@ -75,6 +76,7 @@ You can create an instance by running `civo instance create` with a hostname par
 * `initial_user` - The name of the initial user created on the server. If not provided, will default to the template's `default_username` and fallback to `civo`.
 * `ssh_key_id` - The ID of an already  [uploaded SSH public key](#ssh-keys)  to use for login to the default user. Optional; if one isn't provided a random password will be set and returned in the  `initial_password`  field.
 * `tags` - A space-separated list of tags in `'quotation marks'` to be used freely as required. Optional.
+* `wait` - a simple flag (e.g. `--wait`) that will cause the CLI to spin and wait for the instance to be `ACTIVE`.
 
 Example usage:
 ```
@@ -233,6 +235,59 @@ Hello, world!
 ```
 Please note that resizing can take a few minutes.
 
+## Kubernetes clusters
+#### Introduction
+*IMPORTANT:* Kubernetes is in closed-access only at the moment, during testing. The endpoints here will be rejected unless you are one of the closed set of users that can launch them.
+
+#### List clusters
+To see your created domains, simply call `civo kubernetes list`:
+
+```
+$ civo kubernetes list
++--------------------------------------+------+---------+-----------+--------+
+| ID                                   | Name | # Nodes | Size      | Status |
++--------------------------------------+------+---------+-----------+--------+
+| f13e3f64-d657-40dd-8449-c42c6e341208 | test | 3       | g2.medium | ACTIVE |
++--------------------------------------+------+---------+-----------+--------+
+```
+
+####  Create a cluster
+You can create an instance by running `civo kubernetes create` with a cluster name parameter, as well as any options you provide:
+
+* `size` -  The size of nodes to create, from the current list of sizes  available at [`civo sizes`](#sizes). Defaults to `g2.medium`.
+* `nodes` -  The number of nodes to create (the master also acts as a node).
+* `wait` - a simple flag (e.g. `--wait`) that will cause the CLI to spin and wait for the cluster to be `ACTIVE`.
+
+```
+$ civo kubernetes create my-first-cluster
+Created Kubernetes cluster my-first-cluster
+```
+
+#### Scaling the cluster
+You can change the total number of nodes in the cluster (obviously 1 is the minimum) live while the cluster is running. It takes the name of the cluster (or the ID) and a parameter of `--nodes` which is the new number of nodes to run
+
+```
+civo kubernetes scale my-first-cluster --nodes=4
+Kubernetes cluster my-first-cluster will now have 4 nodes
+```
+
+#### Renaming the cluster
+Although the name isn't used anywhere except for in the list of clusters (e.g. it's not in any way written in to the cluster), if you wish to rename a cluster you can do so with:
+
+```
+civo kubernetes rename my-first-cluster --name="Production"
+Kubernetes cluster my-first-cluster is now named Production
+```
+
+#### Removing the cluster
+If you're completely finished with a cluster you can delete it with:
+
+```
+civo kubernetes remove my-first-cluster
+Removing Kubernetes cluster my-first-cluster
+```
+
+
 ## Domains and Domain Records
 #### Introduction
 We host reverse DNS for all instances automatically. If you'd like to manage forward (normal) DNS for your domains, you can do that for free within your account.
@@ -250,7 +305,7 @@ Created a domain called civoclidemo.xyz with ID 418181b2-fcd2-46a2-ba7f-c843c331
 ```
 You can then proceed to add DNS records to this domain.
 
-#### List Domain Namess
+#### List Domain Names
 To see your created domains, simply call `civo domain list`:
 ```
 $ civo domain list

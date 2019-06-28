@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    civo_cli (0.2.3)
+    civo_cli (0.2.4)
       civo (>= 1.2.1)
       colorize
       json

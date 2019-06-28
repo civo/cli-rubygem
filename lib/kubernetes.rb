@@ -83,9 +83,9 @@ module CivoCLI
           s[:final_cluster]
         end
 
-        puts "\b Done\nCreated cluster #{spinner[:final_cluster].name.colorize(:green)}"
+        puts "\b Done\nCreated Kubernetes cluster #{spinner[:final_cluster].name.colorize(:green)}"
       else
-        puts "Created instance #{name.colorize(:green)}"
+        puts "Created Kubernetes cluster #{name.colorize(:green)}"
       end
     rescue Flexirest::HTTPException => e
       puts e.result.reason.colorize(:red)
@@ -121,7 +121,7 @@ module CivoCLI
 
       if options[:nodes]
         Civo::Kubernetes.update(id: cluster.id, num_target_nodes: options[:nodes])
-        puts "Kubernetes cluster #{cluster.name} will now have #{options[:nodes].colorize(:green)} nodes"
+        puts "Kubernetes cluster #{cluster.name.colorize(:green)} will now have #{options[:nodes].colorize(:green)} nodes"
       end
     rescue Flexirest::HTTPException => e
       puts e.result.reason.colorize(:red)
@@ -140,6 +140,7 @@ module CivoCLI
       puts e.result.reason.colorize(:red)
       exit 1
     end
+    map "delete" => "remove", "destroy" => "remove"
 
     default_task :list
 
