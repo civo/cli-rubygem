@@ -16,7 +16,7 @@ module CivoCLI
     def show(id)
       CivoCLI::Config.set_api_auth
       rows = []
-      cluster = detect_cluster_id(id)
+      cluster = detect_cluster(id)
 
       puts "                ID : #{cluster.id}"
       puts "              Name : #{cluster.name}"
@@ -48,7 +48,7 @@ module CivoCLI
     def config(id)
       CivoCLI::Config.set_api_auth
       rows = []
-      cluster = detect_cluster_id(id)
+      cluster = detect_cluster(id)
       puts cluster.kubeconfig
     rescue Flexirest::HTTPException => e
       puts e.result.reason.colorize(:red)
@@ -98,7 +98,7 @@ module CivoCLI
     LONGDESC
     def rename(id)
       CivoCLI::Config.set_api_auth
-      cluster = detect_cluster_id(id)
+      cluster = detect_cluster(id)
 
       if options[:name]
         Civo::Kubernetes.update(id: cluster.id, name: options[:name])
@@ -116,7 +116,7 @@ module CivoCLI
     LONGDESC
     def scale(id)
       CivoCLI::Config.set_api_auth
-      cluster = detect_cluster_id(id)
+      cluster = detect_cluster(id)
 
       if options[:nodes]
         Civo::Kubernetes.update(id: cluster.id, num_target_nodes: options[:nodes])
@@ -131,7 +131,7 @@ module CivoCLI
     desc "remove ID/NAME", "removes an entire Kubernetes cluster with ID/name entered (use with caution!)"
     def remove(id)
       CivoCLI::Config.set_api_auth
-      cluster = detect_cluster_id(id)
+      cluster = detect_cluster(id)
 
       puts "Removing Kubernetes cluster #{cluster.name.colorize(:red)}"
       cluster.remove
@@ -145,7 +145,7 @@ module CivoCLI
 
     private
 
-    def detect_cluster_id(id)
+    def detect_cluster(id)
       result = []
       Civo::Kubernetes.all.items.each do |cluster|
         result << cluster

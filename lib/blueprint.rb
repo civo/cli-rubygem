@@ -19,7 +19,7 @@ module CivoCLI
     desc "show ID", "show the details for a single blueprint"
     def show(id)
       CivoCLI::Config.set_api_auth
-      blueprint = detect_blueprint_id(id)
+      blueprint = detect_blueprint(id)
       puts "                ID : #{blueprint.id}"
       puts "              Name : #{blueprint.name}"
       puts "       Template ID : #{blueprint.template_id}"
@@ -45,7 +45,7 @@ module CivoCLI
     desc "update ID", "update the blueprint with ID"
     def update(id)
       CivoCLI::Config.set_api_auth
-      params = {id: detect_blueprint_id(id)}
+      params = {id: detect_blueprint(id).id}
       params[:dsl_content] = File.read(options["content-file"]) unless options["content-file"].nil?
       params[:template_id] = options["template-id"] unless options["template-id"].nil?
       params[:name] = options["name"] unless options["name"].nil?
@@ -86,7 +86,7 @@ module CivoCLI
     desc "remove ID", "remove the blueprint with ID"
     def remove(id)
       CivoCLI::Config.set_api_auth
-      Civo::Blueprint.remove(detect_blueprint_id(id))
+      Civo::Blueprint.remove(detect_blueprint(id))
     rescue Flexirest::HTTPForbiddenClientException => e
       puts "Sorry, you don't have access to this feature".colorize(:red)
       exit 1
@@ -100,7 +100,7 @@ module CivoCLI
 
     private
 
-    def detect_blueprint_id(id)
+    def detect_blueprint(id)
       result = []
       Civo::Blueprint.all.items.each do |blueprint|
         result << blueprint
