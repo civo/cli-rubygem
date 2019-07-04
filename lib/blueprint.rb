@@ -51,7 +51,7 @@ module CivoCLI
       params[:name] = options["name"] unless options["name"].nil?
       params[:force] = options["force"] unless options["force"].nil?
       Civo::Blueprint.update(params)
-      blueprint = Civo::Blueprint.all.detect {|b| b.id == id }
+      blueprint = detect_blueprint(id)
       puts "Updated blueprint #{blueprint.name.colorize(:green)}"
     rescue Flexirest::HTTPForbiddenClientException => e
       puts "Sorry, you don't have access to this feature".colorize(:red)
