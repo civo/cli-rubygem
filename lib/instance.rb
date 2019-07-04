@@ -312,7 +312,7 @@ module CivoCLI
       Civo::Instance.all.items.each do |instance|
         result << instance
       end
-      result.select! { |instance| instance.hostname.include?(id) }
+      result.select! { |instance| instance.hostname.include?(id) || instance.id.include?(id) }
 
       if result.count.zero?
         puts "No instances found for '#{id}'. Please check your query."

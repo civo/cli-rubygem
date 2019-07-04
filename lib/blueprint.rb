@@ -8,6 +8,9 @@ module CivoCLI
         rows << [blueprint.id, blueprint.name, blueprint.template_id, blueprint.version, blueprint.last_build_ended_at]
       end
       puts Terminal::Table.new headings: ['ID', 'Name', 'Template ID', 'Version', "Last built"], rows: rows
+    rescue Flexirest::HTTPForbiddenClientException => e
+      puts "Sorry, you don't have access to this feature".colorize(:red)
+      exit 1
     rescue Flexirest::HTTPException => e
       puts e.result.reason.colorize(:red)
       exit 1
@@ -16,7 +19,7 @@ module CivoCLI
     desc "show ID", "show the details for a single blueprint"
     def show(id)
       CivoCLI::Config.set_api_auth
-      blueprint = Civo::Blueprint.all.detect {|b| b.id == id }
+      blueprint = detect_blueprint_id(id)
       puts "                ID : #{blueprint.id}"
       puts "              Name : #{blueprint.name}"
       puts "       Template ID : #{blueprint.template_id}"
@@ -27,6 +30,9 @@ module CivoCLI
       puts "-" * 29 + " CONTENT " + "-" * 29
       puts ""
       puts blueprint.dsl_content
+    rescue Flexirest::HTTPForbiddenClientException => e
+      puts "Sorry, you don't have access to this feature".colorize(:red)
+      exit 1
     rescue Flexirest::HTTPException => e
       puts e.result.reason.colorize(:red)
       exit 1
@@ -35,16 +41,21 @@ module CivoCLI
     option "content-file", type: :string, desc: "The filename of a file to be used as the Blueprintfile content", aliases: ["-c"], banner: "CONTENT_FILE"
     option "template-id", type: :string, desc: "The ID of the template to update", aliases: ["-t"], banner: "TEMPLATE_ID"
     option :name, type: :string, desc: "A nice name to be used for the blueprint", aliases: ["-n"], banner: "NICE_NAME"
+    option :force, type: :boolean, desc: "Force a rebuild on the next run", aliases: ["-f"]
     desc "update ID", "update the blueprint with ID"
     def update(id)
       CivoCLI::Config.set_api_auth
-      params = {id: id}
+      params = {id: detect_blueprint_id(id)}
       params[:dsl_content] = File.read(options["content-file"]) unless options["content-file"].nil?
       params[:template_id] = options["template-id"] unless options["template-id"].nil?
       params[:name] = options["name"] unless options["name"].nil?
+      params[:force] = options["force"] unless options["force"].nil?
       Civo::Blueprint.update(params)
       blueprint = Civo::Blueprint.all.detect {|b| b.id == id }
       puts "Updated blueprint #{blueprint.name.colorize(:green)}"
+    rescue Flexirest::HTTPForbiddenClientException => e
+      puts "Sorry, you don't have access to this feature".colorize(:red)
+      exit 1
     rescue Flexirest::HTTPException => e
       puts e.result.reason.colorize(:red)
       exit 1
@@ -63,6 +74,9 @@ module CivoCLI
       result = Civo::Blueprint.create(params)
       blueprint = Civo::Blueprint.all.detect {|b| b.id == result.id }
       puts "Created blueprint #{blueprint.name.colorize(:green)} with ID #{blueprint.id.colorize(:green)}"
+    rescue Flexirest::HTTPForbiddenClientException => e
+      puts "Sorry, you don't have access to this feature".colorize(:red)
+      exit 1
     rescue Flexirest::HTTPException => e
       puts e.result.reason.colorize(:red)
       exit 1
@@ -72,7 +86,10 @@ module CivoCLI
     desc "remove ID", "remove the blueprint with ID"
     def remove(id)
       CivoCLI::Config.set_api_auth
-      Civo::Blueprint.remove(id)
+      Civo::Blueprint.remove(detect_blueprint_id(id))
+    rescue Flexirest::HTTPForbiddenClientException => e
+      puts "Sorry, you don't have access to this feature".colorize(:red)
+      exit 1
     rescue Flexirest::HTTPException => e
       puts e.result.reason.colorize(:red)
       exit 1
@@ -80,5 +97,25 @@ module CivoCLI
     map "delete" => "remove", "rm" => "remove"
 
     default_task :list
+
+    private
+
+    def detect_blueprint_id(id)
+      result = []
+      Civo::Blueprint.all.items.each do |blueprint|
+        result << blueprint
+      end
+      result.select! { |blueprint| blueprint.name.include?(id) || blueprint.id.include?(id) }
+
+      if result.count.zero?
+        puts "No blueprints found for '#{id}'. Please check your query."
+        exit 1
+      elsif result.count > 1
+        puts "Multiple possible blueprints found for '#{id}'. Please try with a more specific query."
+        exit 1
+      else
+        result[0]
+      end
+    end
   end
 end

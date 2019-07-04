@@ -150,7 +150,7 @@ module CivoCLI
       Civo::Kubernetes.all.items.each do |cluster|
         result << cluster
       end
-      result.select! { |cluster| cluster.name.include?(id) }
+      result.select! { |cluster| cluster.name.include?(id) || cluster.id.include?(id) }
 
       if result.count.zero?
         puts "No Kubernetes clusters found for '#{id}'. Please check your query."
