@@ -49,7 +49,7 @@ module CivoCLI
       params[:dsl_content] = File.read(options["content-file"]) unless options["content-file"].nil?
       params[:template_id] = options["template-id"] unless options["template-id"].nil?
       params[:name] = options["name"] unless options["name"].nil?
-      params[:force_rebuild] = options["force_rebuild"] unless options["force"].nil?
+      params[:force_rebuild] = 1 unless options["force"].nil?
       Civo::Blueprint.update(params)
       blueprint = detect_blueprint(id)
       puts "Updated blueprint #{blueprint.name.colorize(:green)}"

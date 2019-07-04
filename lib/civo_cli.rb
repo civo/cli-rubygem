@@ -67,6 +67,21 @@ module CivoCLI
     subcommand "template", CivoCLI::Template
     map "templates" => "template"
 
+    desc "version", "show the version of Civo CLI used"
+    def version
+      gem_details = Civo::Base._request("https://rubygems.org/api/v1/gems/civo_cli.json")
+      gem_version = Gem::Version.new(gem_details.version)
+      this_version = Gem::Version.new(CivoCLI::VERSION)
+      if this_version > gem_version
+        puts "You are running an #{"unreleased v#{CivoCLI::VERSION}".colorize(:green)} of Civo CLI"
+      elsif this_version == gem_version
+        puts "You are running the #{"current".colorize(:green)} v#{CivoCLI::VERSION} of Civo CLI"
+      else
+        puts "You are running v#{CivoCLI::VERSION} of Civo CLI, but are out of date because #{"v#{gem_details.version}".colorize(:red)} is available"
+
+      end
+    end
+
     desc "volume", "manage volumes"
     subcommand "volume", CivoCLI::Volume
     map "volumes" => "volume"
