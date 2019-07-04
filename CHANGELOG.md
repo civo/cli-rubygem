@@ -3,6 +3,10 @@ All notable changes to the Civo CLI will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.8] - 2019-07-04
+### Fixed
+- Forced rebuild of a blueprint didn't work
+
 ## [0.2.7] - 2019-07-04
 ### Fixed
 - Broken display after updating a blueprint if you use a name instead of an ID
