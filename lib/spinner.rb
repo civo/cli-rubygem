@@ -1,5 +1,4 @@
 module CivoCLI
-  print "\033[?25l"
   class Spinner
     SPINNER_SHAPES = ['|', '/', '-', '\\'].freeze
     DELAY = 0.1
