@@ -17,6 +17,7 @@ module CivoCLI
     end
 
     desc "show ID", "show the details for a single blueprint"
+    option :verbose, type: :boolean, desc: "Show the converted bash script and last run output", aliases: ["-v"]
     def show(id)
       CivoCLI::Config.set_api_auth
       blueprint = detect_blueprint(id)
@@ -30,6 +31,14 @@ module CivoCLI
       puts "-" * 29 + " CONTENT " + "-" * 29
       puts ""
       puts blueprint.dsl_content
+      puts ""
+      puts "-" * 29 + " SCRIPT " + "-" * 29
+      puts ""
+      puts blueprint.script_content
+      puts ""
+      puts "-" * 29 + " LAST RAN " + "-" * 29
+      puts ""
+      puts blueprint.last_build_script_output
     rescue Flexirest::HTTPForbiddenClientException => e
       puts "Sorry, you don't have access to this feature".colorize(:red)
       exit 1
