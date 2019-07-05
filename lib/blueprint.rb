@@ -31,14 +31,17 @@ module CivoCLI
       puts "-" * 29 + " CONTENT " + "-" * 29
       puts ""
       puts blueprint.dsl_content
-      puts ""
-      puts "-" * 29 + " SCRIPT " + "-" * 29
-      puts ""
-      puts blueprint.script_content
-      puts ""
-      puts "-" * 29 + " LAST RAN " + "-" * 29
-      puts ""
-      puts blueprint.last_build_script_output
+
+      unless options["verbose"].nil?
+        puts ""
+        puts "-" * 29 + " SCRIPT " + "-" * 29
+        puts ""
+        puts blueprint.script_content
+        puts ""
+        puts "-" * 29 + " LAST RAN " + "-" * 29
+        puts ""
+        puts blueprint.last_build_script_output
+      end
     rescue Flexirest::HTTPForbiddenClientException => e
       puts "Sorry, you don't have access to this feature".colorize(:red)
       exit 1
