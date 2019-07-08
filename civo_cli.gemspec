@@ -38,7 +38,6 @@ Gem::Specification.new do |spec|
 
   spec.required_ruby_version = '~> 2.0'
 
-  spec.add_development_dependency "bundler", "~> 1.17"
   spec.add_development_dependency "rake", "~> 10.0"
   spec.add_development_dependency "rspec", "~> 3.0"
   spec.add_development_dependency "guard"
@@ -49,6 +48,7 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency 'terminal-table'
   spec.add_runtime_dependency 'thor'
   spec.add_runtime_dependency 'colorize'
+  spec.add_runtime_dependency "bundler", "~> 1.17"
   spec.add_runtime_dependency 'civo', ">= 1.2.1"
   spec.add_runtime_dependency 'json'
 end
