@@ -5,7 +5,7 @@ module CivoCLI
       CivoCLI::Config.set_api_auth
       rows = []
       sizes = Civo::Size.all.items
-      Civo::Instance.all.items.each do |instance|
+      Civo::Instance.all(per_page: 10_000_000).items.each do |instance|
         size_name = sizes.detect {|s| s.name == instance.size}&.nice_name
         rows << [instance.id, instance.hostname, size_name, instance.region, instance.public_ip, instance.status]
       end
@@ -287,7 +287,7 @@ module CivoCLI
 
     def detect_instance(id)
       result = []
-      Civo::Instance.all.items.each do |instance|
+      Civo::Instance.all(per_page: 10_000_000).items.each do |instance|
         result << instance
       end
       result.select! { |instance| instance.hostname.include?(id) || instance.id.include?(id) }

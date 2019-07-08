@@ -3,6 +3,10 @@ All notable changes to the Civo CLI will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.3] - 2019-07-08
+### Fixed
+- Instances list was only showing first twenty servers, now shows all
+
 ## [0.3.2] - 2019-07-05
 ### Fixed
 - CLI was always hiding the cursor, requiring a `reset` afterwards
