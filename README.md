@@ -27,6 +27,8 @@ Civo CLI is a tool to manage your [Civo.com](https://www.civo.com) account from 
 ## Set-up
 Civo CLI is built with Ruby and distributed as a Gem. If you have Ruby (2.0.0 or later) installed, you can simply run `gem install civo_cli` in your terminal to get the gem and its dependencies.
 
+You may need to use `sudo` if you get an error about `You don't have write permissions` when installing the gem. The syntax is `sudo gem install civo_cli`.
+
 If you need to install Ruby, follow the installation instructions appropriate for your operating system, and return to this guide after you have successfully installed the gem.
 
  - [Microsoft Windows](https://rubyinstaller.org/)
