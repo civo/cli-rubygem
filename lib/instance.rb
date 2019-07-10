@@ -286,6 +286,18 @@ module CivoCLI
       exit 1
     end
 
+    desc "public_ip ID/HOSTNAME", "Show public IP of ID/hostname"
+    def public_ip(id)
+      CivoCLI::Config.set_api_auth
+  
+      instance = detect_instance(id)
+      puts instance.public_ip
+
+    rescue Flexirest::HTTPException => e
+      puts e.result.reason.colorize(:red)
+      exit 1
+    end
+
     default_task :list
 
     private
