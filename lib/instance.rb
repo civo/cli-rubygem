@@ -83,7 +83,7 @@ module CivoCLI
     option :region, default: 'lon1', banner: 'civo_region'
     option :public_ip, default: 'true', banner: 'true | false | from [instance_id]'
     option :initial_user, default: 'civo', banner: 'username', aliases: '--user'
-    option :template, lazy_default: '811a8dfb-8202-49ad-b1ef-1e6320b20497', banner: 'template_id'
+    option :template, banner: 'template_id'
     option :snapshot, banner: 'snapshot_id'
     option :ssh_key, banner: 'ssh_key_id'
     option :tags, banner: "'tag1 tag2 tag3...'"
@@ -104,10 +104,15 @@ module CivoCLI
     LONGDESC
     def create(hostname = CivoCLI::NameGenerator.create, *args)
       CivoCLI::Config.set_api_auth
-      if options[:template] && options[:snapshot] || !options[:template] && !options[:snapshot]
+      if options[:template] && options[:snapshot]
         puts "Please provide either template OR snapshot ID".colorize(:red)
         exit 1
       end
+
+      if !options[:template] && !options[:snapshot]
+        options[:template] = '811a8dfb-8202-49ad-b1ef-1e6320b20497'
+      end
+
 
       if options[:template]
         @instance = Civo::Instance.create(hostname: hostname, size: options[:size], template: options[:template], initial_user: options[:initial_user], region: options[:region], ssh_key_id: options[:ssh_key], tags: options[:tags])
