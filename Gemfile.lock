@@ -1,7 +1,8 @@
 PATH
   remote: .
   specs:
-    civo_cli (0.3.3)
+    civo_cli (0.3.4)
+      bundler (~> 1.17)
       civo (>= 1.2.1)
       colorize
       json
@@ -18,7 +19,7 @@ GEM
       tzinfo (~> 1.1)
     addressable (2.6.0)
       public_suffix (>= 2.0.2, < 4.0)
-    civo (1.2.3)
+    civo (1.2.1)
       commander
       flexirest (>= 1.4.6)
       toml
@@ -115,7 +116,6 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  bundler (~> 1.17)
   civo_cli!
   guard
   guard-rspec

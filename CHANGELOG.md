@@ -3,6 +3,13 @@ All notable changes to the Civo CLI will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.4] - 2019-07-10
+### Fixed
+- Template ID in `instance create` default wasn't working nicely, now defaults to Ubuntu if not provided and no snapshot specified
+### Added
+- Verbose mode switch `-v` / `--verbose` to `template list`
+- `public_ip` method to `instance` to output public IP of the chosen instance
+
 ## [0.3.3] - 2019-07-08
 ### Fixed
 - Instances list was only showing first twenty servers, now shows all
