@@ -12,6 +12,8 @@ module CivoCLI
       puts e.result.reason.colorize(:red)
       exit 1
     end
+    map "ls" => "list"
+
 
     desc "show ID", "show the details for a single template"
     def show(id)
