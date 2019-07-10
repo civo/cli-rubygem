@@ -1,14 +1,27 @@
 module CivoCLI
   class Template < Thor
     desc "list", "list all templates"
+    option :verbose, type: :boolean, desc: "Show verbose template detail", aliases: ["-v"] 
     def list
       CivoCLI::Config.set_api_auth
       rows = []
-      Civo::Template.all.items.each do |template|
-        rows << [template.id, template.name, template.image_id, template.volume_id, template.default_username]
+
+      if options[:verbose]
+        Civo::Template.all.items.each do |template|
+          rows << [template.id, template.name, template.image_id, template.volume_id, template.default_username]
+        end
+        puts Terminal::Table.new headings: ['ID', 'Name', 'Image ID', 'Volume ID', "Default Username"], rows: rows
+      
+      else
+        Civo::Template.all.items.each do |template|
+          rows << [template.id, template.name]
+        end
+        puts Terminal::Table.new headings: ['ID', 'Name'], rows: rows
+   
       end
-      puts Terminal::Table.new headings: ['ID', 'Name', 'Image ID', 'Volume ID', "Default Username"], rows: rows
-    rescue Flexirest::HTTPException => e
+
+    
+      rescue Flexirest::HTTPException => e
       puts e.result.reason.colorize(:red)
       exit 1
     end
