@@ -99,7 +99,6 @@ $ civo instance show api-demo.test
           Firewall :  (rules: )
             Region : lon1
       Initial User : api-demouser
-  Initial Password : [randomly-assigned-password-here]
       OpenStack ID : 7c89f7de-2b29-4178-a2e5-55bdaa5c4c21
        Template ID : 811a8dfb-8202-49ad-b1ef-1e6320b20497
        Snapshot ID :
@@ -110,6 +109,26 @@ $ civo instance show api-demo.test
 ```
 
 You will be able to see the instance's details by running `civo instance show api-demo.test` as above.
+
+#### Viewing the Default User Password For an Instance
+You can view the default user's password for an instance by running `civo instance password ID/hostname`
+```
+$ civo instance password api-demo.test
+The password for user civo on api-demo.test is 5OaGxNhaN11pLeWB
+```
+You can also run this command with the option `-q` to get only the password output, useful for scripting situations:
+```
+$ civo instance password -q api-demo.test
+5OaGxNhaN11pLeWB
+```
+
+#### Viewing Instance Public IP Address
+If an instance has a public IP address configured, you can display it using `civo instance ip_address ID/hostname`:
+```
+$ civo instance ip_address -q api-demo.test
+91.211.152.100
+```
+The above example uses `-q` to display only the IP address in the output.
 
 #### Setting Firewalls
 Instances can make use of separately-configured firewalls. By default, an instance is created with no firewall rules set, so you will need to configure some rules (see [Firewalls](#firewalls) for more information).
@@ -174,7 +193,6 @@ $ civo instance show api-demo.test
           Firewall :  (rules: )
             Region : lon1
       Initial User : api-demouser
-  Initial Password : [randomly-assigned-password-here]
       OpenStack ID : 7c89f7de-2b29-4178-a2e5-55bdaa5c4c21
        Template ID : 811a8dfb-8202-49ad-b1ef-1e6320b20497
        Snapshot ID :
@@ -199,7 +217,6 @@ $ civo instance show api-demo-renamed.test
           Firewall :  (rules: )
             Region : lon1
       Initial User : api-demouser
-  Initial Password : [randomly-assigned-password-here]
       OpenStack ID : 7c89f7de-2b29-4178-a2e5-55bdaa5c4c21
        Template ID : 811a8dfb-8202-49ad-b1ef-1e6320b20497
        Snapshot ID :
@@ -565,9 +582,9 @@ Removed SSH key cli-demo with ID 531d0998-4152-410a-af20-0cccb1c7c73b
 Civo instances are built from a template that specifies a disk image. Templates can contain the bare-bones OS install such as Ubuntu or Debian, or custom pre-configured operating systems that you can create yourself from a bootable volume. This allows you to speedily deploy pre-configured instances.
 
 #### Listing Available Template Images
-A simple list of available templates, both globally-defined ones and user-configured account-specific templates, can be seen by running `civo template list`:
+A simple list of available templates, both globally-defined ones and user-configured account-specific templates, can be seen by running `civo template list` or `civo template list --verbose` for maximum information:
 ```
-$ civo template list
+$ civo template list --verbose
 +--------------------------------------+----------------------+--------------------------------------+--------------------------------------+------------------+
 | ID                                   | Name                 | Image ID                             | Volume ID                            | Default Username |
 +--------------------------------------+----------------------+--------------------------------------+--------------------------------------+------------------+
