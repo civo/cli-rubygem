@@ -61,7 +61,6 @@ module CivoCLI
       puts "          Firewall : #{@firewall&.name} (rules: #{@firewall&.rules_count})"
       puts "            Region : #{instance.region}"
       puts "      Initial User : #{instance.initial_user}"
-      puts "  Initial Password : #{instance.initial_password}"
       if instance.ssh_key.present?
         key = ssh_keys.detect { |k| k.id == instance.ssh_key }
         puts "           SSH Key : #{key.name} (#{key.fingerprint})"
@@ -287,12 +286,17 @@ module CivoCLI
     end
 
     desc "public_ip ID/HOSTNAME", "Show public IP of ID/hostname"
+    option :quiet, type: :boolean, aliases: '-q'
     def public_ip(id)
       CivoCLI::Config.set_api_auth
   
       instance = detect_instance(id)
       unless instance.public_ip.nil?
-        puts instance.public_ip
+        if options[:quiet]
+          puts instance.public_ip
+        else
+          puts "The public IP for #{instance.hostname.colorize(:green)} is #{instance.public_ip.colorize(:green)}"
+        end
       else 
         puts "Error: Instance has no public IP"
         exit 2
@@ -303,6 +307,21 @@ module CivoCLI
       exit 1
     end
 
+    desc "password ID/HOSTNAME", "Show the default user password for instance with ID/HOSTNAME"
+    option :quiet, type: :boolean, aliases: '-q'
+    def password(id)
+      CivoCLI::Config.set_api_auth
+      instance = detect_instance(id)
+      if options[:quiet]
+        puts instance.initial_password
+      else
+        puts "The password for user #{instance.initial_user.colorize(:green)} on #{instance.hostname.colorize(:green)} is #{instance.initial_password.colorize(:green)}"
+      end
+    rescue Flexirest::HTTPException => e
+      puts e.result.reason.colorize(:red)
+      exit 1  
+    end
+  
     default_task :list
 
     private
