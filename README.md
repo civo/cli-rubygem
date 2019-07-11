@@ -3,7 +3,7 @@
 ## Introduction
 Civo CLI is a tool to manage your [Civo.com](https://www.civo.com) account from the terminal. The [Civo web control panel](https://www.civo.com/account/) has a user-friendly interface for managing your account, but in case you want to automate or run scripts on your account, or have multiple complex services, the command-line interface outlined here will be useful. This guide will cover the set-up and usage of the Civo CLI tool with examples.
 
-**STATUS:** This project is currently under active development and maintainance.
+**STATUS:** This project is currently under active development and maintenance.
 
 ## Table of contents
 - [Introduction](#introduction)

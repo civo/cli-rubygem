@@ -3,6 +3,14 @@ All notable changes to the Civo CLI will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.5] - 2019-07-11
+### Removed
+- Removed password from output of `instance show`
+
+### Added
+- `instance password` method to show initial user password for specific instance. Accepts --quiet (-q) to output single-line.
+- `--quiet (-q)` switch to `instance public_ip` to display output on single line.
+
 ## [0.3.4] - 2019-07-10
 ### Fixed
 - Template ID in `instance create` default wasn't working nicely, now defaults to Ubuntu if not provided and no snapshot specified
