@@ -85,7 +85,7 @@ module CivoCLI
     option :initial_user, default: 'civo', banner: 'username', aliases: '--user'
     option :template, banner: 'template_id'
     option :snapshot, banner: 'snapshot_id'
-    option :ssh_key, banner: 'ssh_key_id'
+    option :ssh_key, banner: 'ssh_key_id', aliases: '--ssh'
     option :tags, banner: "'tag1 tag2 tag3...'"
     option :wait, type: :boolean
     long_desc <<-LONGDESC
@@ -97,7 +97,7 @@ module CivoCLI
       \x5 --snapshot=<snapshot_id> - Snapshot ID of a previously-made snapshot. Leave blank if using a template.
       \x5 --public_ip=<true | false | from=instance_id> - 'true' if blank. 'from' requires an existing instance ID configured with a public IP address to move to this new instance.
       \x5 --initial_user=<yourusername> - 'civo' if blank
-      \x5 --ssh_key=<ssh_key_id> - for specifying a SSH login key for the default user. Random password assigned if blank, visible by calling `civo instance show hostname`
+      \x5 --ssh_key=<ssh_key_id> - for specifying a SSH login key for the default user from saved SSH keys. Random password assigned if blank, visible by calling `civo instance show hostname`
       \x5 --region=<regioncode> from available Civo regions. Randomly assigned if blank
       \x5 --tags=<'tag1 tag2 tag3...'> - space-separated tag(s)
       \x5 --wait - wait for build to complete and show status. Off by default.
@@ -115,9 +115,9 @@ module CivoCLI
 
 
       if options[:template]
-        @instance = Civo::Instance.create(hostname: hostname, size: options[:size], template: options[:template], initial_user: options[:initial_user], region: options[:region], ssh_key_id: options[:ssh_key], tags: options[:tags])
+        @instance = Civo::Instance.create(hostname: hostname, size: options[:size], template: options[:template], public_ip: options[:public_ip], initial_user: options[:initial_user], region: options[:region], ssh_key_id: options[:ssh_key], tags: options[:tags])
       elsif options[:snapshot]
-        @instance = Civo::Instance.create(hostname: hostname, size: options[:size], snapshot_id: options[:snapshot], initial_user: options[:initial_user], region: options[:region], ssh_key_id: options[:ssh_key], tags: options[:tags])
+        @instance = Civo::Instance.create(hostname: hostname, size: options[:size], snapshot_id: options[:snapshot], public_ip: options[:public_ip], initial_user: options[:initial_user], region: options[:region], ssh_key_id: options[:ssh_key], tags: options[:tags])
       end
 
       if options[:wait]
@@ -291,7 +291,12 @@ module CivoCLI
       CivoCLI::Config.set_api_auth
   
       instance = detect_instance(id)
-      puts instance.public_ip
+      unless instance.public_ip.nil?
+        puts instance.public_ip
+      else 
+        puts "Error: Instance has no public IP"
+        exit 2
+      end
 
     rescue Flexirest::HTTPException => e
       puts e.result.reason.colorize(:red)
