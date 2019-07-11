@@ -255,7 +255,7 @@ $ civo kubernetes list
 +--------------------------------------+------+---------+-----------+--------+
 ```
 
-####  Create a cluster
+#### Create a cluster
 You can create an instance by running `civo kubernetes create` with a cluster name parameter, as well as any options you provide:
 
 * `size` -  The size of nodes to create, from the current list of sizes  available at [`civo sizes`](#sizes). Defaults to `g2.medium`.
