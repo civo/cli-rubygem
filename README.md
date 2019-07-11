@@ -474,8 +474,7 @@ $ civo quota
 +------------------+-------+-------+
 Any items in red are at least 80% of your limit
 ```
-If you have a legitimate need for a quota increase, visit the [
-](https://www.civo.com/account/quota) to place your request - we won't unreasonably withhold any increase, it's just in place so we can control the rate of growth of our platform and so that erran scripts using our API don't suddenly exhaust our available resources.
+If you have a legitimate need for a quota increase, visit the [Quota page](https://www.civo.com/account/quota) to place your request - we won't unreasonably withhold any increase, it's just in place so we can control the rate of growth of our platform and so that erran scripts using our API don't suddenly exhaust our available resources.
 
 ## Regions
 As Civo grows, more regions for hosting your instances will become available. You can run `civo region` to list the regions available. Block storage (Volumes) is region-specific, so if you configure an instance in one region, any volumes you wish to attach to that instance would have to be in the same region.
