@@ -11,6 +11,8 @@ module CivoCLI
     rescue Flexirest::HTTPForbiddenClientException
       reject_user_access
     end
+    map "ls" => "list", "all" => "list"
+
 
     desc "show ID/NAME", "show a Kubernetes cluster by ID or name"
     def show(id)
@@ -139,9 +141,9 @@ module CivoCLI
       puts e.result.reason.colorize(:red)
       exit 1
     end
-    map "delete" => "remove", "destroy" => "remove"
+    map "delete" => "remove", "destroy" => "remove", "rm" => "remove"
 
-    default_task :list
+    default_task :help
 
     private
 

@@ -23,6 +23,7 @@ module CivoCLI
       puts e.result.reason.colorize(:red)
       exit 1
     end
+    map "ls" => "list", "all" => "list"
 
     desc "remove firewall_ID", "Removes a firewall with Firewall ID provided"
     def remove(firewall_ID)
@@ -81,5 +82,6 @@ module CivoCLI
       puts e.result.reason.colorize(:red)
       exit 1
     end
+   default_task :help
   end
 end

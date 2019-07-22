@@ -9,6 +9,8 @@ module CivoCLI
       end
       puts Terminal::Table.new headings: ['ID', 'Name', 'Fingerprint'], rows: rows
     end
+    map "ls" => "list", "all" => "list"
+
 
     desc "upload NAME FILENAME", "upload the SSH public key in FILENAME to a new key called NAME"
     def upload(name, filename)
@@ -33,6 +35,6 @@ module CivoCLI
     end
     map "delete" => "remove", "rm" => "remove"
 
-    default_task :list
+    default_task :help
   end
 end

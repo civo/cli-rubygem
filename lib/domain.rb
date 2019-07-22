@@ -9,6 +9,8 @@ module CivoCLI
       end
       puts Terminal::Table.new headings: ['ID', 'Name'], rows: rows
     end
+    map "ls" => "list", "all" => "list"
+
 
     desc "create DOMAIN", "create a new domain name called DOMAIN"
     def create(name)
@@ -33,7 +35,7 @@ module CivoCLI
     end
     map "delete" => "remove", "rm" => "remove"
 
-    default_task :list
+    default_task :help
 
   end
 end

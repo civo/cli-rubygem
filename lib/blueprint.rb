@@ -15,6 +15,7 @@ module CivoCLI
       puts e.result.reason.colorize(:red)
       exit 1
     end
+    map "ls" => "list", "all" => "list"
 
     desc "show ID", "show the details for a single blueprint"
     option :verbose, type: :boolean, desc: "Show the converted bash script and last run output", aliases: ["-v"]
@@ -129,5 +130,6 @@ module CivoCLI
         result[0]
       end
     end
+    default_task :help
   end
 end

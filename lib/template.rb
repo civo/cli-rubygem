@@ -17,7 +17,6 @@ module CivoCLI
           rows << [template.id, template.name]
         end
         puts Terminal::Table.new headings: ['ID', 'Name'], rows: rows
-   
       end
 
     
@@ -25,8 +24,7 @@ module CivoCLI
       puts e.result.reason.colorize(:red)
       exit 1
     end
-    map "ls" => "list"
-
+    map "ls" => "list", "all" => "list"
 
     desc "show ID", "show the details for a single template"
     def show(id)
@@ -106,6 +104,6 @@ module CivoCLI
     end
     map "delete" => "remove", "rm" => "remove"
 
-    default_task :list
+    default_task :help
   end
 end

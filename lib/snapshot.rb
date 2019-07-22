@@ -9,6 +9,8 @@ module CivoCLI
       end
       puts Terminal::Table.new headings: ['ID', 'Name', 'State', "Size (GB)", "Cron"], rows: rows
     end
+    map "ls" => "list", "all" => "list"
+
 
     option "cron", type: :string, desc: "The timing of when to take/repeat in cron format", aliases: ["-c"], banner: "CRON_TIMING"
     desc "create NAME INSTANCE_ID [-c '0 * * * *']", "create a snapshot called NAME from instance INSTANCE_ID"
@@ -37,7 +39,7 @@ module CivoCLI
     end
     map "delete" => "remove", "rm" => "remove"
 
-    default_task :list
+    default_task :help
 
   end
 end

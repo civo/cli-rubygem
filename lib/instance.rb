@@ -11,6 +11,8 @@ module CivoCLI
       end
       puts Terminal::Table.new headings: ['ID', 'Hostname', 'Size', 'Region', 'Public IP', 'Status'], rows: rows
     end
+    map "ls" => "list", "all" => "list"
+
 
     if CivoCLI::Config.get_meta("admin")
       desc "high-cpu", "list high CPU using instances"
@@ -322,7 +324,7 @@ module CivoCLI
       exit 1  
     end
   
-    default_task :list
+    default_task :help
 
     private
 

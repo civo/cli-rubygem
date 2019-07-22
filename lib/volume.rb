@@ -10,6 +10,7 @@ module CivoCLI
       end
       puts Terminal::Table.new headings: ['ID', 'Name', 'Mounted', 'Size (GB)'], rows: rows
     end
+    map "ls" => "list", "all" => "list"
 
     desc "create NAME SIZE", "create a volume of SIZE (GB) called NAME"
     def create(name, size)
@@ -83,6 +84,6 @@ module CivoCLI
       exit 1
     end
 
-    default_task :list
+    default_task :help
   end
 end
