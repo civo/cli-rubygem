@@ -86,6 +86,7 @@ module CivoCLI
     DEFAULT_INITIAL_USER = 'civo'
     DEFAULT_PUBLIC_IP = 'true'
     DEFAULT_TEMPLATE = '811a8dfb-8202-49ad-b1ef-1e6320b20497'
+    option :name, aliases: '--hostname', banner: 'hostname'
     option :size, default: DEFAULT_SIZE, banner: 'instance_size_code'
     option :region, default: DEFAULT_REGION, banner: 'civo_region'
     option :public_ip, default: DEFAULT_PUBLIC_IP, banner: 'true | false | from [instance_id]'
@@ -95,7 +96,6 @@ module CivoCLI
     option :ssh_key, banner: 'ssh_key_id', aliases: '--ssh'
     option :tags, banner: "'tag1 tag2 tag3...'"
     option :wait, type: :boolean
-    option :name, aliases: '--hostname', banner: 'hostname'
     long_desc <<-LONGDESC
       Create a new instance with hostname (randomly assigned if blank), instance size (default: g2.small),
       \x5template or snapshot ID (default: Ubuntu 18.04 template).
