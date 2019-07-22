@@ -95,6 +95,7 @@ module CivoCLI
     option :ssh_key, banner: 'ssh_key_id', aliases: '--ssh'
     option :tags, banner: "'tag1 tag2 tag3...'"
     option :wait, type: :boolean
+    option :name, aliases: '--hostname', banner: 'hostname'
     long_desc <<-LONGDESC
       Create a new instance with hostname (randomly assigned if blank), instance size (default: g2.small),
       \x5template or snapshot ID (default: Ubuntu 18.04 template).
@@ -109,8 +110,16 @@ module CivoCLI
       \x5 --tags=<'tag1 tag2 tag3...'> - space-separated tag(s)
       \x5 --wait - wait for build to complete and show status. Off by default.
     LONGDESC
-    def create(hostname = CivoCLI::NameGenerator.create, *args)
+    def create(*args)
       CivoCLI::Config.set_api_auth
+
+      if !options[:name] && !args
+        hostname = CivoCLI::NameGenerator.create
+      elsif options[:name]
+        hostname = options[:name]
+      elsif !options[:name] && args
+        hostname = args.join('-')
+      end
       if options[:template] && options[:snapshot]
         puts "Please provide either template OR snapshot ID".colorize(:red)
         exit 1
