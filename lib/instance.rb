@@ -78,6 +78,7 @@ module CivoCLI
       puts e.result.reason.colorize(:red)
       exit 1
     end
+    map "get" => "show", "inspect" => "show"
 
     desc "create [HOSTNAME] [...]", "create a new instance with specified hostname and provided options"
     option :size, default: 'g2.small', banner: 'instance_size_code'

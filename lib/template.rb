@@ -45,6 +45,8 @@ module CivoCLI
       puts e.result.reason.colorize(:red)
       exit 1
     end
+    map "get" => "show", "inspect" => "show"
+
 
     option "cloud-init-file", type: :string, desc: "The filename of a file to be used as user-data/cloud-init", aliases: ["-c"], banner: "CLOUD_INIT_FILENAME"
     option :description, type: :string, desc: "A full/long multiline description", aliases: ["-d"], banner: "DESCRIPTION"

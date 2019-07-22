@@ -36,6 +36,7 @@ module CivoCLI
       puts e.result.reason.colorize(:red)
       exit 1
     end
+    map "get" => "show", "inspect" => "show"
 
     option :priority, type: :string, desc: "The priority for MX records", aliases: ["-p"], banner: "PRIORITY"
     option :ttl, type: :string, desc: "The Time-To-Live for this record", aliases: ["-t"], banner: "TTL"

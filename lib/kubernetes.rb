@@ -45,6 +45,8 @@ module CivoCLI
       puts e.result.reason.colorize(:red)
       exit 1
     end
+    map "get" => "show", "inspect" => "show"
+
 
     desc "config ID/NAME", "get the ~/.kube/config for a Kubernetes cluster by ID or name"
     def config(id)
