@@ -17,7 +17,6 @@ module CivoCLI
           rows << [template.id, template.name]
         end
         puts Terminal::Table.new headings: ['ID', 'Name'], rows: rows
-   
       end
 
     
@@ -25,8 +24,7 @@ module CivoCLI
       puts e.result.reason.colorize(:red)
       exit 1
     end
-    map "ls" => "list"
-
+    map "ls" => "list", "all" => "list"
 
     desc "show ID", "show the details for a single template"
     def show(id)
@@ -47,6 +45,8 @@ module CivoCLI
       puts e.result.reason.colorize(:red)
       exit 1
     end
+    map "get" => "show", "inspect" => "show"
+
 
     option "cloud-init-file", type: :string, desc: "The filename of a file to be used as user-data/cloud-init", aliases: ["-c"], banner: "CLOUD_INIT_FILENAME"
     option :description, type: :string, desc: "A full/long multiline description", aliases: ["-d"], banner: "DESCRIPTION"
@@ -106,6 +106,6 @@ module CivoCLI
     end
     map "delete" => "remove", "rm" => "remove"
 
-    default_task :list
+    default_task :help
   end
 end

@@ -15,6 +15,7 @@ module CivoCLI
       puts e.result.reason.colorize(:red)
       exit 1
     end
+    map "ls" => "list", "all" => "list"
 
     desc "show ID", "show the details for a single blueprint"
     option :verbose, type: :boolean, desc: "Show the converted bash script and last run output", aliases: ["-v"]
@@ -49,6 +50,7 @@ module CivoCLI
       puts e.result.reason.colorize(:red)
       exit 1
     end
+    map "get" => "show", "inspect" => "show"
 
     option "content-file", type: :string, desc: "The filename of a file to be used as the Blueprintfile content", aliases: ["-c"], banner: "CONTENT_FILE"
     option "template-id", type: :string, desc: "The ID of the template to update", aliases: ["-t"], banner: "TEMPLATE_ID"
@@ -129,5 +131,6 @@ module CivoCLI
         result[0]
       end
     end
+    default_task :help
   end
 end

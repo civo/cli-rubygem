@@ -11,6 +11,8 @@ module CivoCLI
       end
       puts Terminal::Table.new headings: ['ID', 'Hostname', 'Size', 'Region', 'Public IP', 'Status'], rows: rows
     end
+    map "ls" => "list", "all" => "list"
+
 
     if CivoCLI::Config.get_meta("admin")
       desc "high-cpu", "list high CPU using instances"
@@ -76,6 +78,7 @@ module CivoCLI
       puts e.result.reason.colorize(:red)
       exit 1
     end
+    map "get" => "show", "inspect" => "show"
 
     desc "create [HOSTNAME] [...]", "create a new instance with specified hostname and provided options"
     option :size, default: 'g2.small', banner: 'instance_size_code'
@@ -322,7 +325,7 @@ module CivoCLI
       exit 1  
     end
   
-    default_task :list
+    default_task :help
 
     private
 

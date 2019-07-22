@@ -13,6 +13,8 @@ module CivoCLI
       end
       puts Terminal::Table.new headings: ['ID', 'Type', 'Name', 'Value', 'TTL', 'Priority'], rows: rows
     end
+    map "ls" => "list", "all" => "list"
+
 
     desc "show RECORD_ID", "show full information for record RECORD_ID (or full DNS name)"
     def show(record_id)
@@ -34,6 +36,7 @@ module CivoCLI
       puts e.result.reason.colorize(:red)
       exit 1
     end
+    map "get" => "show", "inspect" => "show"
 
     option :priority, type: :string, desc: "The priority for MX records", aliases: ["-p"], banner: "PRIORITY"
     option :ttl, type: :string, desc: "The Time-To-Live for this record", aliases: ["-t"], banner: "TTL"
@@ -95,7 +98,7 @@ module CivoCLI
     end
     map "delete" => "remove", "rm" => "remove"
 
-    default_task :list
+    default_task :help
 
     private
 

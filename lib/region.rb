@@ -9,6 +9,8 @@ module CivoCLI
       end
       puts Terminal::Table.new headings: ['Code'], rows: rows
     end
+    map "ls" => "list", "all" => "list"
+
 
     default_task :list
   end

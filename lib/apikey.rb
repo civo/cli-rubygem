@@ -15,6 +15,7 @@ module CivoCLI
       end
       puts Terminal::Table.new headings: ['Name', 'Key', 'Default?'], rows: rows
     end
+    map "ls" => "list", "all" => "list"
 
     desc "add NAME KEY", "Add the API Key 'KEY' using a label of 'NAME'"
     def add(name, key)
@@ -52,6 +53,6 @@ module CivoCLI
     end
     map "use" => "current"
 
-    default_task :list
+    default_task :help
   end
 end

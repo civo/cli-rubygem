@@ -13,6 +13,8 @@ module CivoCLI
       end
       puts Terminal::Table.new headings: ['ID', 'Label', 'CIDR', 'Default?'], rows: rows
     end
+    map "ls" => "list", "all" => "list"
+
 
     desc "create LABEL", "create a new private network called LABEL"
     def create(label)
@@ -37,7 +39,7 @@ module CivoCLI
     end
     map "delete" => "remove", "rm" => "remove"
 
-    default_task :list
+    default_task :help
 
   end
 end
