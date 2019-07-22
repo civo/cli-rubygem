@@ -81,10 +81,15 @@ module CivoCLI
     map "get" => "show", "inspect" => "show"
 
     desc "create [HOSTNAME] [...]", "create a new instance with specified hostname and provided options"
-    option :size, default: 'g2.small', banner: 'instance_size_code'
-    option :region, default: 'lon1', banner: 'civo_region'
-    option :public_ip, default: 'true', banner: 'true | false | from [instance_id]'
-    option :initial_user, default: 'civo', banner: 'username', aliases: '--user'
+    DEFAULT_SIZE = 'g2.small'
+    DEFAULT_REGION = 'lon1'
+    DEFAULT_INITIAL_USER = 'civo'
+    DEFAULT_PUBLIC_IP = 'true'
+    DEFAULT_TEMPLATE = '811a8dfb-8202-49ad-b1ef-1e6320b20497'
+    option :size, default: DEFAULT_SIZE, banner: 'instance_size_code'
+    option :region, default: DEFAULT_REGION, banner: 'civo_region'
+    option :public_ip, default: DEFAULT_PUBLIC_IP, banner: 'true | false | from [instance_id]'
+    option :initial_user, default: DEFAULT_INITIAL_USER, banner: 'username', aliases: '--user'
     option :template, banner: 'template_id'
     option :snapshot, banner: 'snapshot_id'
     option :ssh_key, banner: 'ssh_key_id', aliases: '--ssh'
@@ -112,7 +117,7 @@ module CivoCLI
       end
 
       if !options[:template] && !options[:snapshot]
-        options[:template] = '811a8dfb-8202-49ad-b1ef-1e6320b20497'
+        options[:template] = DEFAULT_TEMPLATE
       end
 
 
