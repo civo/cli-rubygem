@@ -1,3 +1,5 @@
+require 'tempfile'
+
 module CivoCLI
   class Kubernetes < Thor
     desc "list", "list all kubernetes clusters"
@@ -48,12 +50,24 @@ module CivoCLI
     map "get" => "show", "inspect" => "show"
 
 
-    desc "config ID/NAME", "get the ~/.kube/config for a Kubernetes cluster by ID or name"
+    desc "config ID/NAME [--save]", "get or save the ~/.kube/config for a Kubernetes cluster by ID or name"
+    option :save, type: :boolean, aliases: ['--export', '-s']
+    long_desc <<-LONGDESC
+      Gets the configuration information for a Kubernetes cluster by ID or name.
+      \x5Use optional parameter --save [-s or --export] to export the fetched configuration
+      \x5into your Kubernetes configuration file at ~/.kube/config.
+      \x5Please note that this option requires you to have `kubectl` installed.
+    LONGDESC
     def config(id)
       CivoCLI::Config.set_api_auth
       rows = []
       cluster = detect_cluster(id)
-      puts cluster.kubeconfig
+
+      if options[:save]
+        save_config(cluster)
+      else
+        puts cluster.kubeconfig
+      end
     rescue Flexirest::HTTPException => e
       puts e.result.reason.colorize(:red)
       exit 1
@@ -164,6 +178,25 @@ module CivoCLI
         exit 1
       else
         result[0]
+      end
+    end
+
+    def save_config(cluster)
+      config_file_exists = File.exist?("#{ENV["HOME"]}/.kube/config")
+      tempfile = Tempfile.new('import_kubeconfig')
+      begin
+        tempfile.write(cluster.kubeconfig)
+        tempfile.size
+        result = `KUBECONFIG=#{tempfile.path}:~/.kube/config kubectl config view --flatten`
+        File.write("#{ENV["HOME"]}/.kube/config", result)
+        if config_file_exists
+          puts "Merged".colorize(:green) + " config into ~/.kube/config"
+        else
+          puts "Saved".colorize(:green) + " config to ~/.kube/config"
+        end
+      ensure
+        tempfile.close
+        tempfile.unlink
       end
     end
 
