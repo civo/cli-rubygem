@@ -54,7 +54,7 @@ module CivoCLI
     option :save, type: :boolean, aliases: ['--export', '-s']
     long_desc <<-LONGDESC
       Gets the configuration information for a Kubernetes cluster by ID or name.
-      \x5Use optional parameter --save [-s or --export] to export the fetched configuration
+      \x5Use optional parameter --save [-s or --export] to merge the fetched configuration
       \x5into your Kubernetes configuration file at ~/.kube/config.
       \x5Please note that this option requires you to have `kubectl` installed.
     LONGDESC
