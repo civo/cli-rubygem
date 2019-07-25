@@ -1,5 +1,11 @@
 module CivoCLI
   class Instance < Thor
+    DEFAULT_SIZE = 'g2.small'
+    DEFAULT_REGION = 'lon1'
+    DEFAULT_INITIAL_USER = 'civo'
+    DEFAULT_PUBLIC_IP = 'true'
+    DEFAULT_TEMPLATE = '811a8dfb-8202-49ad-b1ef-1e6320b20497'
+
     desc "list", "list all instances"
     def list
       CivoCLI::Config.set_api_auth
@@ -81,11 +87,6 @@ module CivoCLI
     map "get" => "show", "inspect" => "show"
 
     desc "create [HOSTNAME] [...]", "create a new instance with specified hostname and provided options"
-    DEFAULT_SIZE = 'g2.small'
-    DEFAULT_REGION = 'lon1'
-    DEFAULT_INITIAL_USER = 'civo'
-    DEFAULT_PUBLIC_IP = 'true'
-    DEFAULT_TEMPLATE = '811a8dfb-8202-49ad-b1ef-1e6320b20497'
     option :name, aliases: '--hostname', banner: 'hostname'
     option :size, default: DEFAULT_SIZE, banner: 'instance_size_code'
     option :region, default: DEFAULT_REGION, banner: 'civo_region'
