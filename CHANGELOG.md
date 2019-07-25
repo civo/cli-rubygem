@@ -3,6 +3,15 @@ All notable changes to the Civo CLI will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.6] - 2019-07-25
+### Added
+- `kubernetes config --save` option to save a named cluster's configuration file to `~/.kube/config` (requires `kubectl` to be installed)
+- `kubernetes create --wait --save` option to save a new cluster's configuration to `~/.kube/config` (requires `kubectl` to be installed)
+- Aliases for `show` and `list` in methods where they are available.
+
+### Changed
+- Make `help` the default method when base / subcommand is called with no options/arguments.
+
 ## [0.3.5] - 2019-07-11
 ### Removed
 - Removed password from output of `instance show`

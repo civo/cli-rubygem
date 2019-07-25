@@ -278,6 +278,7 @@ You can create an instance by running `civo kubernetes create` with a cluster na
 * `size` -  The size of nodes to create, from the current list of sizes  available at [`civo sizes`](#sizes). Defaults to `g2.medium`.
 * `nodes` -  The number of nodes to create (the master also acts as a node).
 * `wait` - a simple flag (e.g. `--wait`) that will cause the CLI to spin and wait for the cluster to be `ACTIVE`.
+* `save` - a flag used in conjunction with `--wait` (i.e. `--wait --save`) to save the configuration to your local `~/.kube/config` file.
 
 ```
 $ civo kubernetes create my-first-cluster
@@ -290,6 +291,15 @@ You can change the total number of nodes in the cluster (obviously 1 is the mini
 ```
 civo kubernetes scale my-first-cluster --nodes=4
 Kubernetes cluster my-first-cluster will now have 4 nodes
+```
+
+#### Viewing or Saving the cluster configuration
+To output a cluster's configuration information, you can invoke `civo kubernetes config cluster-name`. This will output the `kubeconfig` file to the screen.
+
+You can save a cluster's configuration to your local `~/.kube/config` file. This requires `kubectl` to be installed. Usage:
+```
+civo kubernetes save my-first-cluster
+Saved config to ~/.kube/config
 ```
 
 #### Renaming the cluster
