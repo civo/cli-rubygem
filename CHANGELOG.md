@@ -3,6 +3,10 @@ All notable changes to the Civo CLI will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.7] - 2019-07-26
+### Fixed
+- runtime dependency on `civo` gem updated to latest version due to changes in how it functions.
+
 ## [0.3.6] - 2019-07-25
 ### Added
 - `kubernetes config --save` option to save a named cluster's configuration file to `~/.kube/config` (requires `kubectl` to be installed)
