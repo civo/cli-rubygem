@@ -14,7 +14,7 @@ module CivoCLI
 
 
     desc "create [OPTIONS]", "create a new load balancer with options"
-    option :hostname, banner: 'hostname', aliases: 'name'
+    option :hostname, banner: 'hostname', aliases: '--name'
     option :protocol, default: 'http', banner: 'http | https'
     option :tls_certificate, banner: 'base64 PEM'
     option :tls_key, banner: 'base64 PEM'
@@ -25,6 +25,7 @@ module CivoCLI
     option :fail_timeout, default: 30, type: :numeric, banner: 'seconds'
     option :max_conns, default: 10, type: :numeric, banner: 'connections'
     option :ignore_invalid_backend_tls, default: true, type: :boolean
+    option :backend, default: {}, type: :hash
     long_desc <<-LONGDESC
       Create a new load balancer with hostname (randomly assigned if blank), and supplied options:
       \x5--hostname=<hostname> - If not supplied, will be in format loadbalancer-uuid.civo.com
@@ -36,11 +37,23 @@ module CivoCLI
       \x5--health_check_path=<URL> - Which URL to use to determine if backend status is OK (2xx/3xx status)
       \x5--fail_timeout=<seconds> - Backend timeout in seconds
       \x5--max_conns=<connections> - Maximum concurrent connections to each backend
-      \x5--ignore_invalid_backend_tls=true | false - should self-signed/invalid certificates be ignored from the backend servers?
+      \x5--ignore_invalid_backend_tls=<true | false> - should self-signed/invalid certificates be ignored from the backend servers?
+      \x5--backend=<instance:instance_id protocol:http|https port:number> - A backend instance, with the instance ID, desired protocol and port number specified.
       LONGDESC
     def create(*args)
       CivoCLI::Config.set_api_auth
-      loadbalancer = Civo::LoadBalancer.create(hostname: hostname ||= nil)
+      loadbalancer = Civo::LoadBalancer.create(hostname: options[:hostname] ||= nil, 
+        protocol: options[:protocol], 
+        tls_certificate: options[:tls_certificate], 
+        tls_key: options[:tls_key], 
+        port: options[:port], 
+        max_request_size: options[:max_request_size], 
+        policy: options[:policy], 
+        health_check_path: options[:health_check_path], 
+        fail_timeout: options[:fail_timeout], 
+        max_conns: options[:max_conns], 
+        ignore_invalid_backend_tls: options[:ignore_invalid_backend_tls], 
+        backend: {options[:backend]})
       puts "Created a new Load Balancer with hostname"
     rescue Flexirest::HTTPException => e
       puts e.result.reason.colorize(:red)
