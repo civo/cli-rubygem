@@ -33,15 +33,21 @@ module CivoCLI
       \x5--tls_certificate=<base64 PEM> - TLS certificate in Base64-encoded PEM. Required if --protocol is https
       \x5--tls_key=<base64 PEM> - TLS key in Base64-encoded PEM. Required if --protocol is https
       \x5--max_request_size=<nn> - Maximum request content size, in MB
-      \x5--policy=least_conn | random | round_robin | ip_hash - Balancing policy to choose backends
+      \x5--policy=<least_conn | random | round_robin | ip_hash> - Balancing policy to choose backends
       \x5--health_check_path=<URL> - Which URL to use to determine if backend status is OK (2xx/3xx status)
       \x5--fail_timeout=<seconds> - Backend timeout in seconds
       \x5--max_conns=<connections> - Maximum concurrent connections to each backend
       \x5--ignore_invalid_backend_tls=<true | false> - should self-signed/invalid certificates be ignored from the backend servers?
-      \x5--backend=<instance:instance_id protocol:http|https port:number> - A backend instance, with the instance ID, desired protocol and port number specified.
+      \x5--backend=<instance_id:instance_id protocol:http | https port:number> - A backend instance, with the instance ID, desired protocol and port number specified.
       LONGDESC
     def create(*args)
       CivoCLI::Config.set_api_auth
+      backends = {}
+      options[:backend].each do | key, value |
+        backends[key] = value
+      end
+      backendarray = []
+      backendarray << backends
       loadbalancer = Civo::LoadBalancer.create(hostname: options[:hostname] ||= nil, 
         protocol: options[:protocol], 
         tls_certificate: options[:tls_certificate], 
@@ -53,8 +59,10 @@ module CivoCLI
         fail_timeout: options[:fail_timeout], 
         max_conns: options[:max_conns], 
         ignore_invalid_backend_tls: options[:ignore_invalid_backend_tls], 
-        backend: {options[:backend]})
-      puts "Created a new Load Balancer with hostname"
+        backends: backendarray)
+      
+      puts "Created a new Load Balancer with hostname #{loadbalancer.hostname.colorize(:green)}"
+      
     rescue Flexirest::HTTPException => e
       puts e.result.reason.colorize(:red)
       exit 1
