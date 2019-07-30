@@ -94,7 +94,7 @@ module CivoCLI
 
         spinner = CivoCLI::Spinner.spin(instance: @instance) do |s|
           Civo::Kubernetes.all.items.each do |cluster|
-            if cluster.id == @cluster.id && cluster.status == 'ACTIVE'
+            if cluster.id == @cluster.id && cluster.ready
               s[:final_cluster] = cluster
             end
           end
