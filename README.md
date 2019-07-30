@@ -14,6 +14,7 @@ Civo CLI is a tool to manage your [Civo.com](https://www.civo.com) account from 
 - [Domains and Domain Records](#domains-and-domain-records)
 - [Firewalls](#firewalls)
 - [Networks](#networks)
+- [Load Balancers](#load-balancers)
 - [Quota](#quota)
 - [Sizes](#sizes)
 - [Snapshots](#snapshots)
@@ -478,6 +479,47 @@ Removal of a network, provided you do not need it and your applications do not d
 ```
 $ civo network remove 74b69006-ea59-46a0-96c4-63f5bfa290e1
 Removed the network cli-demo with ID 74b69006-ea59-46a0-96c4-63f5bfa290e1
+```
+
+## Load Balancers
+#### Introduction
+Civo supports load balancing for your instances, allowing you to spread web traffic between them to maximise availability. You can view details about load balancers you may have running, create new oness, update information and even remove them from the command line. 
+
+#### Viewing Load Balancers
+You can list currently-active load balancers by calling `civo loadbalancer list`. This will draw a table detailing the unique ID, hostname, protocol, port, TLS certificate information, backend check path and connection information.
+
+#### Creating Load Balancers
+Create a new load balancer by calling `civo loadbalancer create` as well as any options you provide. The options are:
+* `hostname` -  A valid hostname for your load balancer. Defaults to `loadbalancer-[uuid].civo.com`.
+* `protocol` - Either `http` or `https`. If you specify `https` then you must also provide the next two fields.
+* `tls_certificate` - TLS certificate in Base64-encoded PEM. Required if `--protocol` is `https`.
+* `tls_key` - TLS key in Base64-encoded PEM. Required if `--protocol` is `https`.
+* `max_request_size` - Maximum request content size, in MB. Defaults to 20.
+* `port` - Listening port. Defaults to 80 to match default `http` protocol.
+* `policy` - Traffic management policy. One of: `least_conn` (sends new requests to the least busy server), `random` (sends new requests to a random backend), `round_robin` (sends new requests to the next backend in order), `ip_hash` (sends requests from a given IP address to the same backend), default is "random".
+* `health_check_path` - URL to check for a valid (2xx/3xx) HTTP status on the backends. Defaults to `/`.
+* `fail_timeout` - Timeout in seconds to consider a backend to have failed. Defaults to `30`.
+* `max_conns` - Maximum concurrent connections to each backend. Defaults to `10`.
+* `ignore_invalid_backend_tls` - Should self-signed/invalid certificates be ignored from backend servers? Defaults to `true`.
+* `backend` - Specify a backend instance to associate with the load balancer. Takes `instance_id`, `protocol` and `port` in the format `--backend=instance_id: instance-id protocol: http port: 80`.
+```
+$ civo loadbalancer create
+Created a new Load Balancer with hostname loadbalancer-01da06bc-40ef-4d4c-bb68-d0765d288b54.civo.com
+```
+
+#### Updating Load Balancers
+Updating an existing load balancer takes the same options as creation, with the syntax being `civo loadbalancer update ID [options]`. For example, we can update the hostname of the load balancer created above using `--hostname`:
+```
+$ civo loadbalancer update 01da06bc-40ef-4d4c-bb68-d0765d288b54 --hostname="civo-demo-loadbalancer.civo.com"
+Updated Load Balancer
+```
+
+#### Removing Load Balancers
+Removing a load balancer is simple - simply call `civo loadbalancer remove loadbalancer_id`. Please note that this change is immediate:
+
+```
+$ civo loadbalancer remove 01da06bc-40ef-4d4c-bb68-d0765d288b54
+Removed the load balancer civo-demo-loadbalancer.civo.com with ID 01da06bc-40ef-4d4c-bb68-d0765d288b54
 ```
 
 ## Quota
