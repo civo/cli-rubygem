@@ -139,7 +139,8 @@ module CivoCLI
 
       if options[:wait]
         print "Building new instance #{hostname}: "
-
+        timer = CivoCLI::Timer.new
+        timer.start_timer
         spinner = CivoCLI::Spinner.spin(instance: @instance) do |s|
           Civo::Instance.all.items.each do |instance|
             if instance.id == @instance.id && instance.status == 'ACTIVE'
@@ -148,8 +149,8 @@ module CivoCLI
           end
           s[:final_instance]
         end
-
-        puts "\b Done\nCreated instance #{spinner[:final_instance].hostname.colorize(:green)} - #{spinner[:final_instance].initial_user}@#{spinner[:final_instance].public_ip}"
+        timer.end_timer
+        puts "\b Done\nCreated instance #{spinner[:final_instance].hostname.colorize(:green)} - #{spinner[:final_instance].initial_user}@#{spinner[:final_instance].public_ip} in #{Time.at(timer.time_elapsed).utc.strftime("%M min %S sec")}"
       else
         puts "Created instance #{hostname.colorize(:green)}"
       end
