@@ -16,7 +16,6 @@ module CivoCLI
     desc "create NAME INSTANCE_ID [-c '0 * * * *']", "create a snapshot called NAME from instance INSTANCE_ID"
     def create(name, instance_id)
       CivoCLI::Config.set_api_auth
-      puts options.inspect
       params = {name: name, instance_id: instance_id}
       params[:cron_timing] = options["cron"] unless options["cron"].nil?
       snapshot = Civo::Snapshot.create(params)
