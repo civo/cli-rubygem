@@ -101,9 +101,9 @@ module CivoCLI
             end
           end
           s[:final_cluster]
-          timer.end_timer
         end
 
+        timer.end_timer
         puts "\b Done\nCreated Kubernetes cluster #{name.colorize(:green)} in #{Time.at(timer.time_elapsed).utc.strftime("%M min %S sec")}"
       elsif !options[:wait] && options[:save]
         puts "Creating Kubernetes cluster #{name.colorize(:green)}. Can only save configuration once cluster is created."
