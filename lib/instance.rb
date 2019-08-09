@@ -5,6 +5,7 @@ module CivoCLI
     DEFAULT_INITIAL_USER = 'civo'
     DEFAULT_PUBLIC_IP = 'true'
     DEFAULT_TEMPLATE = '811a8dfb-8202-49ad-b1ef-1e6320b20497'
+    DEFAULT_HOSTNAME = CivoCLI::NameGenerator.create
 
     desc "list", "list all instances"
     def list
@@ -86,8 +87,8 @@ module CivoCLI
     end
     map "get" => "show", "inspect" => "show"
 
-    desc "create [HOSTNAME] [...]", "create a new instance with specified hostname and provided options"
-    option :name, aliases: '--hostname', banner: 'hostname'
+    desc "create [--name=HOSTNAME] [...]", "create a new instance with specified hostname and provided options"
+    option :name, default: DEFAULT_HOSTNAME, aliases: '--hostname', banner: 'hostname'
     option :size, default: DEFAULT_SIZE, banner: 'instance_size_code'
     option :region, default: DEFAULT_REGION, banner: 'civo_region'
     option :public_ip, default: DEFAULT_PUBLIC_IP, banner: 'true | false | from [instance_id]'
