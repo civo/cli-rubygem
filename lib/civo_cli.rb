@@ -1,10 +1,10 @@
 require "civo_cli/version"
-
 require "civo"
 require "json"
 require "thor"
 require "terminal-table"
 require 'colorize'
+require 'config'
 Dir[File.join(__dir__, '*.rb')].each { |file| require file }
 
 module CivoCLI

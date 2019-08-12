@@ -3,6 +3,14 @@ All notable changes to the Civo CLI will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.8] - 2019-08-12
+### Added
+- Time taken for a `create` command appended with `--wait`.
+### Fixed
+- Kubernetes cluster `--wait` command to correctly detect ready state to output time.
+- Issue with file requires preventing Ubuntu machines from running the gem.
+- Error in parsing `instance create` without other switches to create default instance with generated name.
+
 ## [0.3.8] - 2019-07-26
 ### Fixed
 - Kubernetes cluster launches now wait for the master to be ready, not necessarily all nodes.
