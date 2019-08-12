@@ -85,7 +85,7 @@ You can create an instance by running `civo instance create` with a hostname par
 
 Example usage:
 ```
-$ civo instance create api-demo.test --size g2.small --template=811a8dfb-8202-49ad-b1ef-1e6320b20497 --initial_user=demo-user
+$ civo instance create --name=api-demo.test --size g2.small --template=811a8dfb-8202-49ad-b1ef-1e6320b20497 --initial_user=demo-user
  Created instance api-demo.test
 
 $ civo instance show api-demo.test
