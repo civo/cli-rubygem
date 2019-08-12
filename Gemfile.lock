@@ -34,7 +34,7 @@ GEM
     faraday (0.15.4)
       multipart-post (>= 1.2, < 3)
     ffi (1.10.0)
-    flexirest (1.7.9)
+    flexirest (1.7.8)
       activesupport
       crack
       faraday

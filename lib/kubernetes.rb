@@ -90,6 +90,8 @@ module CivoCLI
       @cluster = Civo::Kubernetes.create(name: name, target_nodes_size: options[:size], num_target_nodes: options[:nodes])
 
       if options[:wait]
+        timer = CivoCLI::Timer.new
+        timer.start_timer
         print "Building new Kubernetes cluster #{name.colorize(:green)}: "
 
         spinner = CivoCLI::Spinner.spin(instance: @instance) do |s|
@@ -101,7 +103,8 @@ module CivoCLI
           s[:final_cluster]
         end
 
-        puts "\b Done\nCreated Kubernetes cluster #{spinner[:final_cluster].name.colorize(:green)}"
+        timer.end_timer
+        puts "\b Done\nCreated Kubernetes cluster #{name.colorize(:green)} in #{Time.at(timer.time_elapsed).utc.strftime("%M min %S sec")}"
       elsif !options[:wait] && options[:save]
         puts "Creating Kubernetes cluster #{name.colorize(:green)}. Can only save configuration once cluster is created."
       else

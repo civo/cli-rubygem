@@ -39,6 +39,10 @@ module CivoCLI
     subcommand "kubernetes", CivoCLI::Kubernetes
     map "k8s" => "kubernetes"
 
+    desc "loadbalancer", "manage load balancers"
+    subcommand "loadbalancer", CivoCLI::LoadBalancer
+    map "loadbalancers" => "loadbalancer"
+
     desc "network", "manage networks"
     subcommand "network", CivoCLI::Network
     map "networks" => "network"
