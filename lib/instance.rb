@@ -326,6 +326,8 @@ module CivoCLI
       puts e.result.reason.colorize(:red)
       exit 1
     end
+    map "ip" => "public_ip"
+
 
     desc "password ID/HOSTNAME", "Show the default user password for instance with ID/HOSTNAME"
     option :quiet, type: :boolean, aliases: '-q'
