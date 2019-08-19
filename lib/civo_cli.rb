@@ -5,6 +5,7 @@ require "thor"
 require "terminal-table"
 require 'colorize'
 require 'config'
+require 'namegenerator'
 Dir[File.join(__dir__, '*.rb')].each { |file| require file }
 
 module CivoCLI

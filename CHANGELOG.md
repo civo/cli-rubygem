@@ -3,6 +3,13 @@ All notable changes to the Civo CLI will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.10] - 2019-08-19
+### Added
+- Alias for `instance public_ip` method as `instance ip`
+
+### Fixed
+- File require issues on Debian Jessie preventing gem from running
+
 ## [0.3.9] - 2019-08-12
 ### Added
 - Time taken for a `create` command appended with `--wait`.
