@@ -3,13 +3,20 @@ require 'tempfile'
 module CivoCLI
   class Kubernetes < Thor
     desc "list", "list all kubernetes clusters"
+    option :quiet, type: :boolean, aliases: '-q'
     def list
       CivoCLI::Config.set_api_auth
-      rows = []
-      Civo::Kubernetes.all.items.each do |cluster|
-        rows << [cluster.id, cluster.name, cluster.num_target_nodes, cluster.target_nodes_size, cluster.status]
+      if options[:quiet]
+        Civo::Kubernetes.all.items.each do |cluster|
+        puts cluster.id
+        end
+      else
+        rows = []
+        Civo::Kubernetes.all.items.each do |cluster|
+          rows << [cluster.id, cluster.name, cluster.num_target_nodes, cluster.target_nodes_size, cluster.status]
+        end
+        puts Terminal::Table.new headings: ['ID', 'Name', '# Nodes', 'Size', 'Status'], rows: rows
       end
-      puts Terminal::Table.new headings: ['ID', 'Name', '# Nodes', 'Size', 'Status'], rows: rows
     rescue Flexirest::HTTPForbiddenClientException
       reject_user_access
     end

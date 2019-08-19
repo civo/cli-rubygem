@@ -8,15 +8,22 @@ module CivoCLI
     DEFAULT_HOSTNAME = CivoCLI::NameGenerator.create
 
     desc "list", "list all instances"
+    option :quiet, type: :boolean, aliases: '-q'
     def list
       CivoCLI::Config.set_api_auth
-      rows = []
-      sizes = Civo::Size.all.items
-      Civo::Instance.all(per_page: 10_000_000).items.each do |instance|
-        size_name = sizes.detect {|s| s.name == instance.size}&.nice_name
-        rows << [instance.id, instance.hostname, size_name, instance.region, instance.public_ip, instance.status]
+      if options[:quiet]
+        Civo::Instance.all(per_page: 10_000_000).items.each do |instance|
+          puts instance.id
+        end
+      else
+        rows = []
+        sizes = Civo::Size.all.items
+        Civo::Instance.all(per_page: 10_000_000).items.each do |instance|
+          size_name = sizes.detect {|s| s.name == instance.size}&.nice_name
+          rows << [instance.id, instance.hostname, size_name, instance.region, instance.public_ip, instance.status]
+        end
+        puts Terminal::Table.new headings: ['ID', 'Hostname', 'Size', 'Region', 'Public IP', 'Status'], rows: rows
       end
-      puts Terminal::Table.new headings: ['ID', 'Hostname', 'Size', 'Region', 'Public IP', 'Status'], rows: rows
     end
     map "ls" => "list", "all" => "list"
 
