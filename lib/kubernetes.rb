@@ -82,8 +82,9 @@ module CivoCLI
     desc "create [NAME] [...]", "create a new kubernetes cluster with the specified name and provided options"
     option :size, default: 'g2.medium', banner: 'size'
     option :nodes, default: '3', banner: 'node_count'
-    option :wait, type: :boolean
+    option :wait, type: :boolean, banner: 'wait until cluster is running'
     option :save, type: :boolean
+    option :switch, type: :boolean
     long_desc <<-LONGDESC
       Create a new Kubernetes cluster with name (randomly assigned if blank), instance size (default: g2.medium),
       \x5\x5Optional parameters are as follows:
@@ -91,6 +92,7 @@ module CivoCLI
       \x5 --nodes=<count> - '3' if blank
       \x5 --wait - wait for build to complete and show status. Off by default.
       \x5 --save - save resulting configuration to ~/.kube/config (requires kubectl and the --wait option)
+      \x5 --switch - switch context to newly-created cluster (requires kubectl and the --wait and --save options, as well as existing kubeconfig file)
     LONGDESC
     def create(name = CivoCLI::NameGenerator.create, *args)
       CivoCLI::Config.set_api_auth
@@ -204,10 +206,16 @@ module CivoCLI
       begin
         tempfile.write(cluster.kubeconfig)
         tempfile.size
-        result = `KUBECONFIG=#{tempfile.path}:~/.kube/config kubectl config view --flatten`
+        if options[:switch]
+          result = `KUBECONFIG=#{tempfile.path}:~/.kube/config kubectl config view --flatten`
+        else
+          result = `KUBECONFIG=~/.kube/config:#{tempfile.path} kubectl config view --flatten`
+        end
         Dir.mkdir("#{ENV['HOME']}/.kube/") unless Dir.exist?("#{ENV["HOME"]}/.kube/")
         File.write("#{ENV['HOME']}/.kube/config", result)
-        if config_file_exists
+        if config_file_exists && options[:switch]
+          puts "Merged".colorize(:green) + " config into ~/.kube/config and switched context to #{cluster.name}"
+        elsif config_file_exists && !options[:switch]
           puts "Merged".colorize(:green) + " config into ~/.kube/config"
         else
           puts "Saved".colorize(:green) + " config to ~/.kube/config"
