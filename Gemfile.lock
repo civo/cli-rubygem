@@ -1,9 +1,9 @@
 PATH
   remote: .
   specs:
-    civo_cli (0.3.10)
+    civo_cli (0.3.11)
       bundler (~> 1.17)
-      civo (>= 1.2.5)
+      civo (>= 1.2.7)
       colorize
       json
       terminal-table
@@ -19,7 +19,7 @@ GEM
       tzinfo (~> 1.1)
     addressable (2.6.0)
       public_suffix (>= 2.0.2, < 4.0)
-    civo (1.2.5)
+    civo (1.2.7)
       commander
       flexirest (>= 1.4.6)
       toml
