@@ -36,7 +36,7 @@ module CivoCLI
     subcommand "instance", CivoCLI::Instance
     map "instances" => "instance"
 
-    desc "kubernetes", "manage kubernetess"
+    desc "kubernetes", "manage Kubernetes"
     subcommand "kubernetes", CivoCLI::Kubernetes
     map "k8s" => "kubernetes"
 
@@ -48,7 +48,7 @@ module CivoCLI
     subcommand "network", CivoCLI::Network
     map "networks" => "network"
 
-    desc "quota", "view the quota"
+    desc "quota", "view the quota for the active account"
     subcommand "quota", CivoCLI::Quota
     map "quotas" => "quota"
 
