@@ -1,5 +1,4 @@
 require 'tempfile'
-
 module CivoCLI
   class Kubernetes < Thor
     desc "list", "list all kubernetes clusters"
@@ -22,12 +21,12 @@ module CivoCLI
     end
     map "ls" => "list", "all" => "list"
 
-
     desc "show ID/NAME", "show a Kubernetes cluster by ID or name"
     def show(id)
       CivoCLI::Config.set_api_auth
       rows = []
-      cluster = detect_cluster(id)
+      cluster = Finder.detect_cluster(id)
+      puts cluster.inspect
 
       puts "                ID : #{cluster.id}"
       puts "              Name : #{cluster.name}"
@@ -45,11 +44,22 @@ module CivoCLI
       puts "      API Endpoint : #{cluster.api_endpoint}"
 
       puts ""
+      puts "Nodes:"
       rows = []
       cluster.instances.each do |instance|
         rows << [instance.hostname, instance.public_ip, instance.status]
       end
       puts Terminal::Table.new headings: ['Name', 'IP', 'Status'], rows: rows
+
+      if cluster.installed_applications.any?
+        puts ""
+        puts "Installed marketplace applications:"
+        rows = []
+        cluster.installed_applications.each do |application|
+          rows << [application.application, application.version, application.installed, application.category]
+        end
+        puts Terminal::Table.new headings: ['Name', 'Version', 'Installed', 'Category'], rows: rows
+      end
     rescue Flexirest::HTTPException => e
       puts e.result.reason.colorize(:red)
       exit 1
@@ -67,7 +77,7 @@ module CivoCLI
     LONGDESC
     def config(id)
       CivoCLI::Config.set_api_auth
-      cluster = detect_cluster(id)
+      cluster = Finder.detect_cluster(id)
 
       if options[:save]
         save_config(cluster)
@@ -90,13 +100,14 @@ module CivoCLI
       \x5\x5Optional parameters are as follows:
       \x5 --size=<instance_size> - 'g2.medium' if blank. List of sizes and codes to use can be found through `civo sizes`
       \x5 --nodes=<count> - '3' if blank
+      \x5 --applications=name1,name2 - optional, use names from civo applications
       \x5 --wait - wait for build to complete and show status. Off by default.
       \x5 --save - save resulting configuration to ~/.kube/config (requires kubectl and the --wait option)
       \x5 --switch - switch context to newly-created cluster (requires kubectl and the --wait and --save options, as well as existing kubeconfig file)
     LONGDESC
     def create(name = CivoCLI::NameGenerator.create, *args)
       CivoCLI::Config.set_api_auth
-      @cluster = Civo::Kubernetes.create(name: name, target_nodes_size: options[:size], num_target_nodes: options[:nodes])
+      @cluster = Civo::Kubernetes.create(name: name, target_nodes_size: options[:size], num_target_nodes: options[:nodes], applications: options[:applications])
 
       if options[:wait]
         timer = CivoCLI::Timer.new
@@ -135,7 +146,7 @@ module CivoCLI
     LONGDESC
     def rename(id)
       CivoCLI::Config.set_api_auth
-      cluster = detect_cluster(id)
+      cluster = Finder.detect_cluster(id)
 
       if options[:name]
         Civo::Kubernetes.update(id: cluster.id, name: options[:name])
@@ -153,7 +164,7 @@ module CivoCLI
     LONGDESC
     def scale(id)
       CivoCLI::Config.set_api_auth
-      cluster = detect_cluster(id)
+      cluster = Finder.detect_cluster(id)
 
       if options[:nodes]
         Civo::Kubernetes.update(id: cluster.id, num_target_nodes: options[:nodes])
@@ -168,7 +179,7 @@ module CivoCLI
     desc "remove ID/NAME", "removes an entire Kubernetes cluster with ID/name entered (use with caution!)"
     def remove(id)
       CivoCLI::Config.set_api_auth
-      cluster = detect_cluster(id)
+      cluster = Finder.detect_cluster(id)
 
       puts "Removing Kubernetes cluster #{cluster.name.colorize(:red)}"
       cluster.remove
@@ -181,24 +192,6 @@ module CivoCLI
     default_task :help
 
     private
-
-    def detect_cluster(id)
-      result = []
-      Civo::Kubernetes.all.items.each do |cluster|
-        result << cluster
-      end
-      result.select! { |cluster| cluster.name.include?(id) || cluster.id.include?(id) }
-
-      if result.count.zero?
-        puts "No Kubernetes clusters found for '#{id}'. Please check your query."
-        exit 1
-      elsif result.count > 1
-        puts "Multiple possible Kubernetes clusters found for '#{id}'. Please try with a more specific query."
-        exit 1
-      else
-        result[0]
-      end
-    end
 
     def save_config(cluster)
       config_file_exists = File.exist?("#{ENV["HOME"]}/.kube/config")

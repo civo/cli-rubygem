@@ -40,6 +40,13 @@ module CivoCLI
     subcommand "kubernetes", CivoCLI::Kubernetes
     map "k8s" => "kubernetes", "k3s" => "kubernetes"
 
+    desc "applications", "list and add marketplace applications to Kubernetes clusters"
+    subcommand "applications", CivoCLI::KubernetesApplications
+    map "apps" => "applications", "app" => "applications", "application" => "applications",
+      "addon" => "applications", "addons" => "applications", "marketplace" => "applications",
+      "k8s-apps" => "applications", "k8s-app" => "applications",
+      "k3s-apps" => "applications", "k3s-app" => "applications"
+
     desc "loadbalancer", "manage load balancers"
     subcommand "loadbalancer", CivoCLI::LoadBalancer
     map "loadbalancers" => "loadbalancer"
