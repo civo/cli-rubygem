@@ -48,9 +48,6 @@ module CivoCLI
       Use --cluster=name to specify part of the ID or name of the cluster to add the application to
     LONGDESC
     def add(name)
-      Civo::Kubernetes.verbose!
-      Flexirest::Logger.logfile = STDOUT
-
       CivoCLI::Config.set_api_auth
       app = Finder.detect_app(name)
       cluster = Finder.detect_cluster(options[:cluster])
