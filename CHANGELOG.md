@@ -3,6 +3,10 @@ All notable changes to the Civo CLI will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.13] - 2019-08-28
+### Fixed
+- Was missing a file for Kubernetes marketplace applications
+
 ## [0.3.12] - 2019-08-28
 ### Added
 - Support for Kubernetes marketplace applications

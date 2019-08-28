@@ -26,7 +26,6 @@ module CivoCLI
       CivoCLI::Config.set_api_auth
       rows = []
       cluster = Finder.detect_cluster(id)
-      puts cluster.inspect
 
       puts "                ID : #{cluster.id}"
       puts "              Name : #{cluster.name}"
