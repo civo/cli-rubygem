@@ -55,7 +55,12 @@ module CivoCLI
         puts "Installed marketplace applications:"
         rows = []
         cluster.installed_applications.each do |application|
-          rows << [application.application, application.version, application.installed, application.category]
+          name = application.application
+          if application.plan
+            name += " #{application.plan}"
+          end
+          installed = application.installed ? "Yes" : "Not yet"
+          rows << [name, application.version, installed, application.category]
         end
         puts Terminal::Table.new headings: ['Name', 'Version', 'Installed', 'Category'], rows: rows
       end
@@ -94,6 +99,7 @@ module CivoCLI
     option :wait, type: :boolean, banner: 'wait until cluster is running'
     option :save, type: :boolean
     option :switch, type: :boolean
+    option :applications, type: :string
     long_desc <<-LONGDESC
       Create a new Kubernetes cluster with name (randomly assigned if blank), instance size (default: g2.medium),
       \x5\x5Optional parameters are as follows:
@@ -106,7 +112,33 @@ module CivoCLI
     LONGDESC
     def create(name = CivoCLI::NameGenerator.create, *args)
       CivoCLI::Config.set_api_auth
-      @cluster = Civo::Kubernetes.create(name: name, target_nodes_size: options[:size], num_target_nodes: options[:nodes], applications: options[:applications])
+
+      applications = []
+      options[:applications].split(",").map(&:chomp).each do |name|
+        name, plan = name.split(":")
+        app = Finder.detect_app(name)
+        plans = app.plans&.items
+
+        if app && plans.present? && plan.blank?
+          if AskService.available?
+            plan = AskService.choose("You requested to add #{app.name} but didn't select a plan. Please choose one...", plans.map(&:label))
+            if plan.present?
+              puts "Thank you, next time you could use \"#{app.name}:#{plan}\" to choose automatically"
+            end
+          else
+            puts "You need to specify a plan".colorize(:red) + " from those available (#{plans.join(", ")} using the syntax \"#{app.name}:plan\""
+            exit 1
+          end
+        end
+
+        if plan.present?
+          applications << "#{app.name}:#{plan}"
+        else
+          applications << app.name
+        end
+      end
+
+      @cluster = Civo::Kubernetes.create(name: name, target_nodes_size: options[:size], num_target_nodes: options[:nodes], applications: applications.join(","))
 
       if options[:wait]
         timer = CivoCLI::Timer.new

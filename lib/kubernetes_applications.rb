@@ -13,9 +13,16 @@ module CivoCLI
       else
         rows = []
         Civo::Kubernetes.applications.items.each do |app|
-          rows << [app.name, app.version, app.category]
+          plans = app.plans&.items
+          if plans.present?
+            plans = plans.map {|p| p.label}.join(", ")
+          else
+            plans = "Not applicable"
+          end
+
+          rows << [app.name, app.version, app.category, plans]
         end
-        puts Terminal::Table.new headings: ['Name', 'Version', 'Category'], rows: rows
+        puts Terminal::Table.new headings: ['Name', 'Version', 'Category', 'Plans'], rows: rows
       end
     rescue Flexirest::HTTPForbiddenClientException
       reject_user_access
@@ -49,10 +56,28 @@ module CivoCLI
     LONGDESC
     def add(name)
       CivoCLI::Config.set_api_auth
+      name, plan = name.split(":")
       app = Finder.detect_app(name)
       cluster = Finder.detect_cluster(options[:cluster])
+      plans = app.plans&.items
 
-      Civo::Kubernetes.update(id: cluster.id, applications: app.name)
+      if app && plans.present? && plan.blank?
+        if AskService.available?
+          plan = AskService.choose("You requested to add #{app.name} but didn't select a plan. Please choose one...", plans.map(&:label))
+          if plan.present?
+            puts "Thank you, next time you could use \"#{app.name}:#{plan}\" to choose automatically"
+          end
+        else
+          puts "You need to specify a plan".colorize(:red) + " from those available (#{plans.join(", ")} using the syntax \"#{app.name}:plan\""
+          exit 1
+        end
+      end
+
+      if plan.present?
+        Civo::Kubernetes.update(id: cluster.id, applications: "#{app.name}:#{plan}")
+      else
+        Civo::Kubernetes.update(id: cluster.id, applications: app.name)
+      end
       puts "Added #{app.name.colorize(:green)} #{app.version} to Kubernetes cluster #{cluster.name.colorize(:green)}"
     rescue Flexirest::HTTPException => e
       puts e.result.reason.colorize(:red)

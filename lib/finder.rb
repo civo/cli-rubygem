@@ -20,7 +20,7 @@ class Finder
   def self.detect_app(name)
     result = []
     Civo::Kubernetes.applications.items.each do |app|
-      result << app if app.name.downcase.include?(name)
+      result << app if app.name.downcase.include?(name.downcase)
     end
 
     if result.count.zero?
