@@ -114,7 +114,7 @@ module CivoCLI
       CivoCLI::Config.set_api_auth
 
       applications = []
-      options[:applications].split(",").map(&:chomp).each do |name|
+      (options[:applications] || "").split(",").map(&:chomp).each do |name|
         name, plan = name.split(":")
         app = Finder.detect_app(name)
         plans = app.plans&.items
