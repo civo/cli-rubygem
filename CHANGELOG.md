@@ -5,6 +5,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [0.3.17] - 2019-09-11
 ### Changed
+- If there is one exact match for a cluster, return that, only try partial matches if there are no exact matches
+
+## [0.3.17] - 2019-09-11
+### Changed
 - Edited help text for cluster creation to clarify application name discovery
 - Changed applications list and applications show to show dependencies of those applications
 ### Added
