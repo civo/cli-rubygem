@@ -3,6 +3,11 @@ All notable changes to the Civo CLI will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.17] - 2019-09-11
+### Changed
+- Edited help text for cluster creation to clarify application name discovery
+- Changed applications list and applications show to show dependencies of those applications
+
 ## [0.3.16] - 2019-09-09
 ### Fixed
 - Fixed bug when launching a Kubernetes cluster without any applications

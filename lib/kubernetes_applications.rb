@@ -19,10 +19,16 @@ module CivoCLI
           else
             plans = "Not applicable"
           end
+          dependencies = app.dependencies&.items
+          if dependencies.present?
+            dependencies = dependencies.map {|d| d}.join(", ")
+          else
+            dependencies = " "
+          end
 
-          rows << [app.name, app.version, app.category, plans]
+          rows << [app.name, app.version, app.category, plans, dependencies]
         end
-        puts Terminal::Table.new headings: ['Name', 'Version', 'Category', 'Plans'], rows: rows
+        puts Terminal::Table.new headings: ['Name', 'Version', 'Category', 'Plans', 'Dependencies'], rows: rows
       end
     rescue Flexirest::HTTPForbiddenClientException
       reject_user_access
@@ -42,6 +48,7 @@ module CivoCLI
       puts "        Maintainer : #{app.maintainer}"
       puts "               URL : #{app.url}"
       puts "       Description : #{app.description}"
+      puts "      Dependencies : #{app.dependencies.join(", ")}"
     rescue Flexirest::HTTPException => e
       puts e.result.reason.colorize(:red)
       exit 1

@@ -105,7 +105,7 @@ module CivoCLI
       \x5\x5Optional parameters are as follows:
       \x5 --size=<instance_size> - 'g2.medium' if blank. List of sizes and codes to use can be found through `civo sizes`
       \x5 --nodes=<count> - '3' if blank
-      \x5 --applications=name1,name2 - optional, use names from civo applications
+      \x5 --applications=name1,name2 - optional, use names shown by running `civo applications`
       \x5 --wait - wait for build to complete and show status. Off by default.
       \x5 --save - save resulting configuration to ~/.kube/config (requires kubectl and the --wait option)
       \x5 --switch - switch context to newly-created cluster (requires kubectl and the --wait and --save options, as well as existing kubeconfig file)
