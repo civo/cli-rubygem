@@ -92,6 +92,7 @@ module CivoCLI
       puts e.result.reason.colorize(:red)
       exit 1
     end
+    map "kubeconfig" => "config"
 
     desc "create [NAME] [...]", "create a new kubernetes cluster with the specified name and provided options"
     option :size, default: 'g2.medium', banner: 'size'
