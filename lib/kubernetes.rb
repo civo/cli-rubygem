@@ -100,7 +100,7 @@ module CivoCLI
     option :wait, type: :boolean, banner: 'wait until cluster is running'
     option :save, type: :boolean
     option :switch, type: :boolean
-    option :applications, type: :string
+    option :applications, type: :string, aliases: %w{apps app application}
     long_desc <<-LONGDESC
       Create a new Kubernetes cluster with name (randomly assigned if blank), instance size (default: g2.medium),
       \x5\x5Optional parameters are as follows:
@@ -111,7 +111,7 @@ module CivoCLI
       \x5 --save - save resulting configuration to ~/.kube/config (requires kubectl and the --wait option)
       \x5 --switch - switch context to newly-created cluster (requires kubectl and the --wait and --save options, as well as existing kubeconfig file)
     LONGDESC
-    def create(name = CivoCLI::NameGenerator.create, *args)
+    def create(name = CivoCLI::NameGenerator.create)
       CivoCLI::Config.set_api_auth
 
       applications = []

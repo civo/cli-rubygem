@@ -3,7 +3,11 @@ All notable changes to the Civo CLI will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.3.17] - 2019-09-11
+## [0.3.19] - 2019-09-11
+### Added
+- Added aliases for `--applications` when creating a cluster
+
+## [0.3.18] - 2019-09-11
 ### Changed
 - If there is one exact match for a cluster, return that, only try partial matches if there are no exact matches
 
