@@ -65,7 +65,7 @@ module CivoCLI
       CivoCLI::Config.set_api_auth
       name, plan = name.split(":")
       app = Finder.detect_app(name)
-      cluster = detect_cluster(options[:cluster])
+      cluster = Finder.detect_cluster(options[:cluster])
       plans = app.plans&.items
 
       if app && plans.present? && plan.blank?
@@ -94,14 +94,6 @@ module CivoCLI
     default_task :help
 
     private
-
-    def detect_cluster(cluster)
-      if cluster.present?
-        Finder.detect_cluster(cluster)
-      else
-        Finder.check_for_single_cluster
-      end
-    end
 
     def reject_user_access
       puts "Sorry, this functionality is currently in closed beta and not available to the public yet"
