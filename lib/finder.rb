@@ -21,6 +21,19 @@ class Finder
     end
   end
 
+  def self.check_for_single_cluster
+    result = []
+    Civo::Kubernetes.all.items.each do |element|
+      result << element
+    end
+    if result.count == 1
+      result[0]
+    else
+      puts 'Multiple possible Kubernetes clusters found. Please try again and specify the cluster with --cluster=NAME.'
+      exit 1
+    end
+  end
+
   def self.detect_app(name)
     result = []
     apps = Civo::Kubernetes.applications.items
