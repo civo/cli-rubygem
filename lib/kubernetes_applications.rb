@@ -57,7 +57,7 @@ module CivoCLI
 
 
     desc "add NAME --cluster=...", "add the marketplace application to a Kubernetes cluster by ID or name"
-    option :cluster
+    option :cluster, required: true
     long_desc <<-LONGDESC
       Use --cluster=name to specify part of the ID or name of the cluster to add the application to
     LONGDESC
