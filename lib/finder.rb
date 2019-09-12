@@ -5,13 +5,14 @@ class Finder
       result << cluster
     end
 
-    id.blank?
+    if id.blank?
       if result.count == 1
         return result[0]
       elsif result.count > 1
         puts 'Multiple possible Kubernetes clusters found. Please try again and specify the cluster with --cluster=NAME.'
         exit 1
       end
+    end
       
     matched = result.detect { |cluster| cluster.name == id || cluster.id == id }
     return matched if matched
