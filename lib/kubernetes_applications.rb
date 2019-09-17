@@ -65,6 +65,10 @@ module CivoCLI
       CivoCLI::Config.set_api_auth
       name, plan = name.split(":")
       app = Finder.detect_app(name)
+      if app.default
+        puts "You cannot choose to install #{app.name}".colorize(:red) + " because it is a pre-installed application"
+        exit 1
+      end
       cluster = Finder.detect_cluster(options[:cluster])
       plans = app.plans&.items
 

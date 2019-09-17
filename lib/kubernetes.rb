@@ -118,6 +118,10 @@ module CivoCLI
       (options[:applications] || "").split(",").map(&:chomp).each do |name|
         name, plan = name.split(":")
         app = Finder.detect_app(name)
+        if app.default # Will be installed by default
+          next
+        end
+
         plans = app.plans&.items
 
         if app && plans.present? && plan.blank?
