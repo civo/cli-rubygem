@@ -12,6 +12,8 @@ module CivoCLI
   class Error < StandardError; end
 
   class Main < Thor
+    check_unknown_options!
+
     desc "apikey", "manage API keys stored in the client"
     subcommand "apikey", CivoCLI::APIKey
     map "apikeys" => "apikey"
