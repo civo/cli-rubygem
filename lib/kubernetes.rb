@@ -83,10 +83,18 @@ module CivoCLI
       CivoCLI::Config.set_api_auth
       cluster = Finder.detect_cluster(id)
 
-      if options[:save]
-        save_config(cluster)
+      if !cluster.ready
+        puts "The cluster isn't ready yet, so the KUBECONFIG isn't available.".colorize(:red)
+        exit 1
+      elsif cluster.kubeconfig.blank?
+        puts "The cluster is being installed, but the KUBECONFIG isn't available yet.".colorize(:red)
+        exit 1
       else
-        puts cluster.kubeconfig
+        if options[:save]
+          save_config(cluster)
+        else
+          puts cluster.kubeconfig
+        end
       end
     rescue Flexirest::HTTPException => e
       puts e.result.reason.colorize(:red)

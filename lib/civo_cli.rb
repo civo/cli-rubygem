@@ -81,6 +81,16 @@ module CivoCLI
     subcommand "template", CivoCLI::Template
     map "templates" => "template"
 
+    desc "update", "update to the latest Civo CLI"
+    def update
+      output = `gem update civo_cli 2>&1`
+      if output["You don't have write permissions"]
+        puts "Updating Civo CLI with sudo permissions (unable to do it without)"
+        `sudo gem update civo_cli 2>&1`
+      end
+      version
+    end
+
     desc "version", "show the version of Civo CLI used"
     def version
       gem_details = Civo::Base._request("https://rubygems.org/api/v1/gems/civo_cli.json")
