@@ -20,6 +20,10 @@ module CivoCLI
     desc "add NAME KEY", "Add the API Key 'KEY' using a label of 'NAME'"
     def add(name, key)
       CivoCLI::Config.set_apikey(name, key)
+      keys = CivoCLI::Config.get_apikeys
+      if keys.length == 1
+        CivoCLI::Config.set_meta(:current_apikey, name)
+      end
       puts "Saved the API Key #{key.colorize(:green)} as #{name.colorize(:green)}"
     end
 
