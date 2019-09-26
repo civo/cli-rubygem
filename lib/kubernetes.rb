@@ -105,6 +105,7 @@ module CivoCLI
     desc "create [NAME] [...]", "create a new kubernetes cluster with the specified name and provided options"
     option :size, default: 'g2.medium', banner: 'size'
     option :nodes, default: '3', banner: 'node_count'
+    option :version, default: nil, banner: 'version'
     option :wait, type: :boolean, banner: 'wait until cluster is running'
     option :save, type: :boolean
     option :switch, type: :boolean
