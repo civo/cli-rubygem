@@ -3,6 +3,10 @@ All notable changes to the Civo CLI will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.2] - 2019-09-26
+### Changed
+- Add ability to specify a version when creating a cluster (default to our current version).
+
 ## [0.4.1] - 2019-09-21
 ### Changed
 - `civo kubernetes config` will show an error (and exit with a non-zero status) if the config isn't available from the server

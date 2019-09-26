@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    civo_cli (0.4.1)
+    civo_cli (0.4.2)
       bundler (~> 1.17)
       civo (>= 1.2.8)
       colorize
@@ -70,7 +70,7 @@ GEM
     mime-types (3.3)
       mime-types-data (~> 3.2015)
     mime-types-data (3.2019.0904)
-    minitest (5.11.3)
+    minitest (5.12.0)
     multi_json (1.13.1)
     multipart-post (2.1.1)
     nenv (0.3.0)

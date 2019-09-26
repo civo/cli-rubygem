@@ -114,6 +114,7 @@ module CivoCLI
       \x5\x5Optional parameters are as follows:
       \x5 --size=<instance_size> - 'g2.medium' if blank. List of sizes and codes to use can be found through `civo sizes`
       \x5 --nodes=<count> - '3' if blank
+      \x5 --version=<version> - our latest k3s version if blank
       \x5 --applications=name1,name2 - optional, use names shown by running `civo applications`
       \x5 --wait - wait for build to complete and show status. Off by default.
       \x5 --save - save resulting configuration to ~/.kube/config (requires kubectl and the --wait option)
@@ -151,7 +152,7 @@ module CivoCLI
         end
       end
 
-      @cluster = Civo::Kubernetes.create(name: name, target_nodes_size: options[:size], num_target_nodes: options[:nodes], applications: applications.join(","))
+      @cluster = Civo::Kubernetes.create(name: name, target_nodes_size: options[:size], num_target_nodes: options[:nodes], applications: applications.join(","), version: options[:version])
 
       if options[:wait]
         timer = CivoCLI::Timer.new
