@@ -41,6 +41,7 @@ module CivoCLI
       end
       puts "           Version : #{cluster.kubernetes_version}"
       puts "      API Endpoint : #{cluster.api_endpoint}"
+      puts "      DNS A record : #{cluster.id}.k8s.civo.com"
 
       puts ""
       puts "Nodes:"
