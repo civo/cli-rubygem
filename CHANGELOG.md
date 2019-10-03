@@ -3,6 +3,10 @@ All notable changes to the Civo CLI will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.5] - 2019-09-30
+### Changed
+- Set default for reboot to be a soft reboot, and made hard-reboot an optional extra command
+
 ## [0.4.4] - 2019-09-30
 ### Added
 - Added DNS A record to kubernetes show command

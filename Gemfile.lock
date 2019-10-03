@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    civo_cli (0.4.4)
+    civo_cli (0.4.5)
       bundler (~> 1.17)
       civo (>= 1.2.8)
       colorize
@@ -35,7 +35,7 @@ GEM
     faraday (0.16.2)
       multipart-post (>= 1.2, < 3)
     ffi (1.11.1)
-    flexirest (1.8.5)
+    flexirest (1.8.6)
       activesupport
       crack
       faraday
