@@ -25,7 +25,7 @@ module CivoCLI
 
     desc "remove NAME", "Remove the API Key with a label of 'NAME'"
     def remove(name)
-       keys = CivoCLI::Config.get_apikeys
+      keys = CivoCLI::Config.get_apikeys
         if keys.keys.include?(name)
           CivoCLI::Config.delete_apikey(name)
           puts "Removed the API Key #{name.colorize(:green)}"
@@ -37,9 +37,14 @@ module CivoCLI
     map "delete" => "remove", "rm" => "remove"
 
     desc "current [NAME]", "Either return the name of the current API key or set the current key to be the one with a label of 'NAME'"
-    def current(name=nil)
+    def current(name = nil)
       if name.nil?
-        puts "The current API Key is #{CivoCLI::Config.get_current_apikey_name.colorize(:green)}"
+        currentkey = CivoCLI::Config.get_current_apikey_name
+        if currentkey
+          puts "The current API Key is #{currentkey.colorize(:green)}"
+        else
+          puts "No current API Key set".colorize(:red)
+        end
       else
         keys = CivoCLI::Config.get_apikeys
         if keys.keys.include?(name)
