@@ -240,24 +240,24 @@ module CivoCLI
 
     private
 
-    def platform?
-      if RUBY_PLATFORM =~ /win32/ || RUBY_PLATFORM =~ /mingw/
-        "Windows"
-      end
+    def windows?
+      RUBY_PLATFORM =~ /win32/ || RUBY_PLATFORM =~ /mingw/
     end
 
     def save_config(cluster)
-      if platform? != "Windows"
+      if windows?
         config_file_exists = File.exist?("#{ENV["HOME"]}/.kube/config")
         tempfile = Tempfile.new('import_kubeconfig')
         begin
           tempfile.write(cluster.kubeconfig)
           tempfile.size
+          home = `echo %HOMEPATH%`.chomp
           if options[:switch]
-            result = `KUBECONFIG=#{tempfile.path}:~/.kube/config kubectl config view --flatten`
+            ENV['KUBECONFIG'] = "#{tempfile.path};#{home}\\.kube\\config"
           else
-            result = `KUBECONFIG=~/.kube/config:#{tempfile.path} kubectl config view --flatten`
+            ENV['KUBECONFIG'] = "#{home}\\.kube\\config;#{tempfile.path}"
           end
+          result = `kubectl config view --flatten`
           write_file(result)
           if config_file_exists && options[:switch]
             puts "Merged".colorize(:green) + " config into ~/.kube/config and switched context to #{cluster.name}"
@@ -276,13 +276,11 @@ module CivoCLI
         begin
           tempfile.write(cluster.kubeconfig)
           tempfile.size
-          home = `echo %HOMEPATH%`.chomp
           if options[:switch]
-            ENV['KUBECONFIG'] = "#{tempfile.path};#{home}\\.kube\\config"
+            result = `KUBECONFIG=#{tempfile.path}:~/.kube/config kubectl config view --flatten`
           else
-            ENV['KUBECONFIG'] = "#{home}\\.kube\\config;#{tempfile.path}"
+            result = `KUBECONFIG=~/.kube/config:#{tempfile.path} kubectl config view --flatten`
           end
-          result = `kubectl config view --flatten`
           write_file(result)
           if config_file_exists && options[:switch]
             puts "Merged".colorize(:green) + " config into ~/.kube/config and switched context to #{cluster.name}"
