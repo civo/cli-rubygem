@@ -270,7 +270,7 @@ module CivoCLI
           tempfile.close
           tempfile.unlink
         end
-      else 
+      else
         config_file_exists = File.exist?("#{ENV["HOME"]}/.kube/config")
         tempfile = Tempfile.new('import_kubeconfig')
         begin
@@ -278,9 +278,9 @@ module CivoCLI
           tempfile.size
           home = `echo %HOMEPATH%`.chomp
           if options[:switch]
-            ENV['KUBECONFIG']="#{tempfile.path};#{home}\\.kube\\config"
+            ENV['KUBECONFIG'] = "#{tempfile.path};#{home}\\.kube\\config"
           else
-            ENV['KUBECONFIG']="#{home}\\.kube\\config;#{tempfile.path}"
+            ENV['KUBECONFIG'] = "#{home}\\.kube\\config;#{tempfile.path}"
           end
           result = `kubectl config view --flatten`
           write_file(result)
