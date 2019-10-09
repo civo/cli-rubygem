@@ -245,12 +245,12 @@ module CivoCLI
     end
 
     def save_config(cluster)
-      if windows?
-        config_file_exists = File.exist?("#{ENV["HOME"]}/.kube/config")
-        tempfile = Tempfile.new('import_kubeconfig')
-        begin
-          tempfile.write(cluster.kubeconfig)
-          tempfile.size
+      config_file_exists = File.exist?("#{ENV["HOME"]}/.kube/config")
+      tempfile = Tempfile.new('import_kubeconfig')
+      begin
+        tempfile.write(cluster.kubeconfig)
+        tempfile.size
+        if windows?
           home = `echo %HOMEPATH%`.chomp
           if options[:switch]
             ENV['KUBECONFIG'] = "#{tempfile.path};#{home}\\.kube\\config"
@@ -258,41 +258,24 @@ module CivoCLI
             ENV['KUBECONFIG'] = "#{home}\\.kube\\config;#{tempfile.path}"
           end
           result = `kubectl config view --flatten`
-          write_file(result)
-          if config_file_exists && options[:switch]
-            puts "Merged".colorize(:green) + " config into ~/.kube/config and switched context to #{cluster.name}"
-          elsif config_file_exists && !options[:switch]
-            puts "Merged".colorize(:green) + " config into ~/.kube/config"
-          else
-            puts "Saved".colorize(:green) + " config to ~/.kube/config"
-          end
-        ensure
-          tempfile.close
-          tempfile.unlink
-        end
-      else
-        config_file_exists = File.exist?("#{ENV["HOME"]}/.kube/config")
-        tempfile = Tempfile.new('import_kubeconfig')
-        begin
-          tempfile.write(cluster.kubeconfig)
-          tempfile.size
+        else
           if options[:switch]
             result = `KUBECONFIG=#{tempfile.path}:~/.kube/config kubectl config view --flatten`
           else
             result = `KUBECONFIG=~/.kube/config:#{tempfile.path} kubectl config view --flatten`
           end
-          write_file(result)
-          if config_file_exists && options[:switch]
-            puts "Merged".colorize(:green) + " config into ~/.kube/config and switched context to #{cluster.name}"
-          elsif config_file_exists && !options[:switch]
-            puts "Merged".colorize(:green) + " config into ~/.kube/config"
-          else
-            puts "Saved".colorize(:green) + " config to ~/.kube/config"
-          end
-        ensure
-          tempfile.close
-          tempfile.unlink
         end
+        write_file(result)
+        if config_file_exists && options[:switch]
+          puts "Merged".colorize(:green) + " config into ~/.kube/config and switched context to #{cluster.name}"
+        elsif config_file_exists && !options[:switch]
+          puts "Merged".colorize(:green) + " config into ~/.kube/config"
+        else
+          puts "Saved".colorize(:green) + " config to ~/.kube/config"
+        end
+      ensure
+        tempfile.close
+        tempfile.unlink
       end
     end
 
