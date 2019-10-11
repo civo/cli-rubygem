@@ -390,16 +390,16 @@ Installed marketplace applications:
 If you want to add a new application to an existing cluster, you can do so by running the `civo applications` command specifying the cluster and the app(s) you wish to add:
 ```
 $ civo applications add Longhorn --cluster=apps-demo
-Added Longhorn 0.5.0 to Kubernetes cluster apps-demo
+Added Longhorn 0.5.0 to Kubernetes cluster apps-demo-cluster
 ```
 
-#### Installing Applications That Require Plans
+#### Installing Applications That Require Plans
 Some applications, specifically database apps, require a storage plan that you can specify at installation time from the list of plan options. If you do not provide a plan for an application that requires one, the CLI will notify you and suggest a default size:
 ```
 $ civo applications add mariadb --cluster=apps-demo
 You requested to add MariaDB but didn't select a plan. Please choose one... (5GB, 10GB, 20GB) [5GB]: 10GB
 Thank you, next time you could use "MariaDB:10GB" to choose automatically
-Added MariaDB 10.4.7 to Kubernetes cluster apps-demo
+Added MariaDB 10.4.7 to Kubernetes cluster apps-demo-cluster
 ```
 
 ## Domains and Domain Records
