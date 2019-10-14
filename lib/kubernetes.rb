@@ -240,19 +240,32 @@ module CivoCLI
 
     private
 
+    def windows?
+      RUBY_PLATFORM =~ /win32/ || RUBY_PLATFORM =~ /mingw/
+    end
+
     def save_config(cluster)
       config_file_exists = File.exist?("#{ENV["HOME"]}/.kube/config")
       tempfile = Tempfile.new('import_kubeconfig')
       begin
         tempfile.write(cluster.kubeconfig)
         tempfile.size
-        if options[:switch]
-          result = `KUBECONFIG=#{tempfile.path}:~/.kube/config kubectl config view --flatten`
+        if windows?
+          home = `echo %HOMEPATH%`.chomp
+          if options[:switch]
+            ENV['KUBECONFIG'] = "#{tempfile.path};#{home}\\.kube\\config"
+          else
+            ENV['KUBECONFIG'] = "#{home}\\.kube\\config;#{tempfile.path}"
+          end
+          result = `kubectl config view --flatten`
         else
-          result = `KUBECONFIG=~/.kube/config:#{tempfile.path} kubectl config view --flatten`
+          if options[:switch]
+            result = `KUBECONFIG=#{tempfile.path}:~/.kube/config kubectl config view --flatten`
+          else
+            result = `KUBECONFIG=~/.kube/config:#{tempfile.path} kubectl config view --flatten`
+          end
         end
-        Dir.mkdir("#{ENV['HOME']}/.kube/") unless Dir.exist?("#{ENV["HOME"]}/.kube/")
-        File.write("#{ENV['HOME']}/.kube/config", result)
+        write_file(result)
         if config_file_exists && options[:switch]
           puts "Merged".colorize(:green) + " config into ~/.kube/config and switched context to #{cluster.name}"
         elsif config_file_exists && !options[:switch]
@@ -264,6 +277,11 @@ module CivoCLI
         tempfile.close
         tempfile.unlink
       end
+    end
+
+    def write_file(result)
+      Dir.mkdir("#{ENV['HOME']}/.kube/") unless Dir.exist?("#{ENV["HOME"]}/.kube/")
+      File.write("#{ENV['HOME']}/.kube/config", result)
     end
 
     def reject_user_access
