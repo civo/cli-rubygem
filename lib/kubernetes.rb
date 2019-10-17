@@ -5,16 +5,27 @@ module CivoCLI
     option :quiet, type: :boolean, aliases: '-q'
     def list
       CivoCLI::Config.set_api_auth
+      latest_version = get_latest_k3s_version
+      upgrade_available = false
+
       if options[:quiet]
         Civo::Kubernetes.all.items.each do |cluster|
         puts cluster.id
         end
       else
+        upgrade_available = true
         rows = []
         Civo::Kubernetes.all.items.each do |cluster|
-          rows << [cluster.id, cluster.name, cluster.num_target_nodes, cluster.target_nodes_size, cluster.status]
+          version = cluster.kubernetes_version
+          if Gem::Version.new(latest_version) > Gem::Version.new(version)
+            version = "#{version} *"
+          end
+          rows << [cluster.id, cluster.name, cluster.num_target_nodes, cluster.target_nodes_size, version, cluster.status]
         end
-        puts Terminal::Table.new headings: ['ID', 'Name', '# Nodes', 'Size', 'Status'], rows: rows
+        puts Terminal::Table.new headings: ['ID', 'Name', '# Nodes', 'Size', 'Version', 'Status'], rows: rows
+        if upgrade_available
+          puts "\n* An upgrade to v#{latest_version} is available, use - civo k3s upgrade ID - to upgrade it"
+        end
       end
     rescue Flexirest::HTTPForbiddenClientException
       reject_user_access
@@ -39,9 +50,17 @@ module CivoCLI
       else
         puts "            Status : #{cluster.status.colorize(:red)}"
       end
-      puts "           Version : #{cluster.kubernetes_version}"
+
+      latest_version = get_latest_k3s_version
+      if Gem::Version.new(latest_version) > Gem::Version.new(cluster.kubernetes_version)
+        puts "           Version : " + "#{cluster.kubernetes_version} - an upgrade to #{latest_version} is available!".colorize(:red)
+      else
+        puts "           Version : #{cluster.kubernetes_version}"
+      end
+
       puts "      API Endpoint : #{cluster.api_endpoint}"
       puts "      DNS A record : #{cluster.id}.k8s.civo.com"
+      puts "                     *.#{cluster.id}.k8s.civo.com"
 
       puts ""
       puts "Nodes:"
@@ -204,6 +223,23 @@ module CivoCLI
       exit 1
     end
 
+    desc "upgrade ID/NAME [--version]", "upgrade Kubernetes cluster's k3s version"
+    option :version
+    long_desc <<-LONGDESC
+      Use --name=version to specify the new version (or leave blank to automatically use latest)
+    LONGDESC
+    def upgrade(id)
+      CivoCLI::Config.set_api_auth
+      cluster = Finder.detect_cluster(id)
+
+      version = get_latest_k3s_version(options[:version])
+      Civo::Kubernetes.update(id: cluster.id, version: version)
+      puts "Kubernetes cluster #{cluster.id} is upgrading to v#{version.colorize(:green)}"
+    rescue Flexirest::HTTPException => e
+      puts e.result.reason.colorize(:red)
+      exit 1
+    end
+
     desc "scale ID/NAME [--nodes]", "rescale the Kubernetes cluster to a new node count"
     option :nodes
     long_desc <<-LONGDESC
@@ -287,6 +323,20 @@ module CivoCLI
     def reject_user_access
       puts "Sorry, this functionality is currently in closed beta and not available to the public yet"
       exit(1)
+    end
+
+    def get_latest_k3s_version(version = nil)
+      available_versions = Civo::Kubernetes.versions
+      if version
+        if available_versions.detect {|v| v.version == version}
+          version
+        else
+          puts "Version #{version.colorize(:red)} is not available for upgrading"
+          exit(1)
+        end
+      else
+        available_versions.first.version
+      end
     end
   end
 end
