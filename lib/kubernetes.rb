@@ -18,13 +18,13 @@ module CivoCLI
         Civo::Kubernetes.all.items.each do |cluster|
           version = cluster.kubernetes_version
           if Gem::Version.new(latest_version) > Gem::Version.new(version)
-            version = "#{version} *"
+            version = "#{version} *".colorize(:red)
           end
           rows << [cluster.id, cluster.name, cluster.num_target_nodes, cluster.target_nodes_size, version, cluster.status]
         end
         puts Terminal::Table.new headings: ['ID', 'Name', '# Nodes', 'Size', 'Version', 'Status'], rows: rows
         if upgrade_available
-          puts "\n* An upgrade to v#{latest_version} is available, use - civo k3s upgrade ID - to upgrade it"
+          puts "\n* An upgrade to v#{latest_version} is available, use - civo k3s upgrade ID - to upgrade it".colorize(:red)
         end
       end
     rescue Flexirest::HTTPForbiddenClientException
@@ -37,6 +37,7 @@ module CivoCLI
       CivoCLI::Config.set_api_auth
       rows = []
       cluster = Finder.detect_cluster(id)
+      upgrade_available = false
 
       puts "                ID : #{cluster.id}"
       puts "              Name : #{cluster.name}"
@@ -53,7 +54,8 @@ module CivoCLI
 
       latest_version = get_latest_k3s_version
       if Gem::Version.new(latest_version) > Gem::Version.new(cluster.kubernetes_version)
-        puts "           Version : " + "#{cluster.kubernetes_version} - an upgrade to #{latest_version} is available!".colorize(:red)
+        puts "           Version : " + "#{cluster.kubernetes_version} *".colorize(:red)
+        upgrade_available = true
       else
         puts "           Version : #{cluster.kubernetes_version}"
       end
@@ -61,6 +63,10 @@ module CivoCLI
       puts "      API Endpoint : #{cluster.api_endpoint}"
       puts "      DNS A record : #{cluster.id}.k8s.civo.com"
       puts "                     *.#{cluster.id}.k8s.civo.com"
+
+      if upgrade_available
+        puts "\n* An upgrade to v#{latest_version} is available, use - civo k3s upgrade ID - to upgrade it".colorize(:red)
+      end
 
       puts ""
       puts "Nodes:"
@@ -234,7 +240,7 @@ module CivoCLI
 
       version = get_latest_k3s_version(options[:version])
       Civo::Kubernetes.update(id: cluster.id, version: version)
-      puts "Kubernetes cluster #{cluster.id} is upgrading to v#{version.colorize(:green)}"
+      puts "Kubernetes cluster #{cluster.name.colorize(:green)} is upgrading to #{version.colorize(:green)}"
     rescue Flexirest::HTTPException => e
       puts e.result.reason.colorize(:red)
       exit 1
