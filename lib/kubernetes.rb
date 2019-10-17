@@ -13,11 +13,11 @@ module CivoCLI
         puts cluster.id
         end
       else
-        upgrade_available = true
         rows = []
         Civo::Kubernetes.all.items.each do |cluster|
           version = cluster.kubernetes_version
           if Gem::Version.new(latest_version) > Gem::Version.new(version)
+            upgrade_available = true
             version = "#{version} *".colorize(:red)
           end
           rows << [cluster.id, cluster.name, cluster.num_target_nodes, cluster.target_nodes_size, version, cluster.status]
