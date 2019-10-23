@@ -365,7 +365,9 @@ module CivoCLI
           exit(1)
         end
       else
-        available_versions.first.version
+        k3s = available_versions.detect {|v| v.default}
+        k3s ||= available_versions.first
+        k3s.version
       end
     end
   end
