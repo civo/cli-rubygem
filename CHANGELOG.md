@@ -3,6 +3,10 @@ All notable changes to the Civo CLI will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.9] - 2019-10-23
+### Changed
+- `civo k3s versions` now shows which version will be installed by default.
+
 ## [0.4.8] - 2019-10-17
 ### Fixed
 - `civo k3s ls` was always warning about an upgrade available.

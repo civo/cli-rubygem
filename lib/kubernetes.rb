@@ -32,6 +32,30 @@ module CivoCLI
     end
     map "ls" => "list", "all" => "list"
 
+    desc "versions", "list available k3s versions"
+    option :quiet, type: :boolean, aliases: '-q'
+    def versions
+      CivoCLI::Config.set_api_auth
+      if options[:quiet]
+        Civo::Kubernetes.versions.each do |k3s|
+          puts k3s.version
+        end
+      else
+        rows = []
+        Civo::Kubernetes.versions.each do |k3s|
+          if k3s.default
+            rows << [k3s.version, k3s.type, "<====="]
+          else
+            rows << [k3s.version, k3s.type, ""]
+          end
+        end
+        puts Terminal::Table.new headings: ['Version', 'Type', 'Default'], rows: rows
+      end
+    rescue Flexirest::HTTPForbiddenClientException
+      reject_user_access
+    end
+    map "version" => "versions", "v" => "versions"
+
     desc "show ID/NAME", "show a Kubernetes cluster by ID or name"
     def show(id)
       CivoCLI::Config.set_api_auth
