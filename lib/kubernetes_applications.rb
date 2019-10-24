@@ -48,7 +48,9 @@ module CivoCLI
       puts "        Maintainer : #{app.maintainer}"
       puts "               URL : #{app.url}"
       puts "       Description : #{app.description}"
-      puts "      Dependencies : #{app.dependencies.join(", ")}"
+      if app.dependencies
+        puts "      Dependencies : #{app.dependencies.join(", ")}"
+      end
     rescue Flexirest::HTTPException => e
       puts e.result.reason.colorize(:red)
       exit 1
