@@ -3,6 +3,10 @@ All notable changes to the Civo CLI will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.3] - 2019-11-01
+### Added
+- New feature, you can now specify a script to be run from the cloud-init process (it's saved on the instance as `/usr/local/bin/civo-user-init-script` with root ownership and only root permissions). `civo instance create --script=~/code/myscript.sh`
+
 ## [0.5.2] - 2019-11-01
 ### Fixed
 - Updated bundler dependency requirements to allow for new versions of bundler (v. 2 onwards)

@@ -85,6 +85,11 @@ module CivoCLI
       puts "       Template ID : #{instance.template_id}"
       puts "       Snapshot ID : #{instance.snapshot_id}"
       puts ""
+      if instance.script.present?
+        puts "-" * 26 + " INIT SCRIPT " + "-" * 26
+        puts instance.script
+        puts ""
+      end
       puts "-" * 29 + " NOTES " + "-" * 29
       puts ""
       puts instance.notes
@@ -104,6 +109,7 @@ module CivoCLI
     option :snapshot, banner: 'snapshot_id'
     option :ssh_key, banner: 'ssh_key_id', aliases: '--ssh'
     option :tags, banner: "'tag1 tag2 tag3...'"
+    option :script, type: :string, desc: "The filename of a file to be used as an initialization script", aliases: ["-s"], banner: "SCRIPT"
     option :wait, type: :boolean
     long_desc <<-LONGDESC
       Create a new instance with hostname (randomly assigned if blank), instance size (default: g2.small),
@@ -138,11 +144,18 @@ module CivoCLI
         options[:template] = DEFAULT_TEMPLATE
       end
 
+      if options[:script]
+        unless File.exist?(File.expand_path(options[:script]))
+          puts "The file #{options[:script].colorize(:red)} doesn't exist or isn't readable"
+          exit 2
+        end
+        script = File.read(File.expand_path(options[:script]))
+      end
 
       if options[:template]
-        @instance = Civo::Instance.create(hostname: hostname, size: options[:size], template: options[:template], public_ip: options[:public_ip], initial_user: options[:initial_user], region: options[:region], ssh_key_id: options[:ssh_key], tags: options[:tags])
+        @instance = Civo::Instance.create(hostname: hostname, size: options[:size], template: options[:template], public_ip: options[:public_ip], initial_user: options[:initial_user], region: options[:region], ssh_key_id: options[:ssh_key], tags: options[:tags], script: script)
       elsif options[:snapshot]
-        @instance = Civo::Instance.create(hostname: hostname, size: options[:size], snapshot_id: options[:snapshot], public_ip: options[:public_ip], initial_user: options[:initial_user], region: options[:region], ssh_key_id: options[:ssh_key], tags: options[:tags])
+        @instance = Civo::Instance.create(hostname: hostname, size: options[:size], snapshot_id: options[:snapshot], public_ip: options[:public_ip], initial_user: options[:initial_user], region: options[:region], ssh_key_id: options[:ssh_key], tags: options[:tags], script: script)
       end
 
       if options[:wait]
@@ -214,6 +227,7 @@ module CivoCLI
       exit 1
     end
     map "delete" => "remove"
+    map "rm" => "remove"
 
     desc "reboot ID/HOSTNAME", "reboots instance with ID/hostname entered"
     def reboot(id)
@@ -316,7 +330,7 @@ module CivoCLI
     option :quiet, type: :boolean, aliases: '-q'
     def public_ip(id)
       CivoCLI::Config.set_api_auth
-  
+
       instance = detect_instance(id)
       unless instance.public_ip.nil?
         if options[:quiet]
@@ -324,7 +338,7 @@ module CivoCLI
         else
           puts "The public IP for #{instance.hostname.colorize(:green)} is #{instance.public_ip.colorize(:green)}"
         end
-      else 
+      else
         puts "Error: Instance has no public IP"
         exit 2
       end
@@ -348,9 +362,9 @@ module CivoCLI
       end
     rescue Flexirest::HTTPException => e
       puts e.result.reason.colorize(:red)
-      exit 1  
+      exit 1
     end
-  
+
     default_task :help
 
     private
