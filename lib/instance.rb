@@ -109,6 +109,7 @@ module CivoCLI
     option :snapshot, banner: 'snapshot_id'
     option :ssh_key, banner: 'ssh_key_id', aliases: '--ssh'
     option :tags, banner: "'tag1 tag2 tag3...'"
+    option :quiet, type: :boolean, aliases: '-q'
     option :script, type: :string, desc: "The filename of a file to be used as an initialization script", aliases: ["-s"], banner: "SCRIPT"
     option :wait, type: :boolean
     long_desc <<-LONGDESC
@@ -159,10 +160,10 @@ module CivoCLI
       end
 
       if options[:wait]
-        print "Building new instance #{hostname}: "
+        print "Building new instance #{hostname}: " unless options[:quiet]
         timer = CivoCLI::Timer.new
         timer.start_timer
-        spinner = CivoCLI::Spinner.spin(instance: @instance) do |s|
+        spinner = CivoCLI::Spinner.spin(instance: @instance, quiet: options[:quiet]) do |s|
           Civo::Instance.all.items.each do |instance|
             if instance.id == @instance.id && instance.status == 'ACTIVE'
               s[:final_instance] = instance
@@ -171,7 +172,11 @@ module CivoCLI
           s[:final_instance]
         end
         timer.end_timer
-        puts "\b Done\nCreated instance #{spinner[:final_instance].hostname.colorize(:green)} - #{spinner[:final_instance].initial_user}@#{spinner[:final_instance].public_ip} in #{Time.at(timer.time_elapsed).utc.strftime("%M min %S sec")}"
+        if options[:quiet]
+          puts spinner[:final_instance].id
+        else
+          puts "\b Done\nCreated instance #{spinner[:final_instance].hostname.colorize(:green)} - #{spinner[:final_instance].initial_user}@#{spinner[:final_instance].public_ip} in #{Time.at(timer.time_elapsed).utc.strftime("%M min %S sec")}"
+        end
       else
         puts "Created instance #{hostname.colorize(:green)}"
       end
