@@ -38,11 +38,11 @@ module CivoCLI
     subcommand "instance", CivoCLI::Instance
     map "instances" => "instance"
 
-    desc "kubernetes", "manage Kubernetes"
+    desc "kubernetes", "manage Kubernetes. Aliases: k8s, k3s"
     subcommand "kubernetes", CivoCLI::Kubernetes
     map "k8s" => "kubernetes", "k3s" => "kubernetes"
 
-    desc "applications", "list and add marketplace applications to Kubernetes clusters"
+    desc "applications", "list and add marketplace applications to Kubernetes clusters. Alias: apps, addons, marketplace, k8s-apps, k3s-apps"
     subcommand "applications", CivoCLI::KubernetesApplications
     map "apps" => "applications", "app" => "applications", "application" => "applications",
       "addon" => "applications", "addons" => "applications", "marketplace" => "applications",

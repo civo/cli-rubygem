@@ -5,6 +5,9 @@ module CivoCLI
     option :quiet, type: :boolean, aliases: '-q'
     def list
       CivoCLI::Config.set_api_auth
+      latest_version = get_latest_k3s_version
+      upgrade_available = false
+
       if options[:quiet]
         Civo::Kubernetes.all.items.each do |cluster|
         puts cluster.id
@@ -12,20 +15,53 @@ module CivoCLI
       else
         rows = []
         Civo::Kubernetes.all.items.each do |cluster|
-          rows << [cluster.id, cluster.name, cluster.num_target_nodes, cluster.target_nodes_size, cluster.status]
+          version = cluster.kubernetes_version
+          if Gem::Version.new(latest_version) > Gem::Version.new(version)
+            upgrade_available = true
+            version = "#{version} *".colorize(:red)
+          end
+          rows << [cluster.id, cluster.name, cluster.num_target_nodes, cluster.target_nodes_size, version, cluster.status]
         end
-        puts Terminal::Table.new headings: ['ID', 'Name', '# Nodes', 'Size', 'Status'], rows: rows
+        puts Terminal::Table.new headings: ['ID', 'Name', '# Nodes', 'Size', 'Version', 'Status'], rows: rows
+        if upgrade_available
+          puts "\n* An upgrade to v#{latest_version} is available, use - civo k3s upgrade ID - to upgrade it".colorize(:red)
+        end
       end
     rescue Flexirest::HTTPForbiddenClientException
       reject_user_access
     end
     map "ls" => "list", "all" => "list"
 
+    desc "versions", "list available k3s versions"
+    option :quiet, type: :boolean, aliases: '-q'
+    def versions
+      CivoCLI::Config.set_api_auth
+      if options[:quiet]
+        Civo::Kubernetes.versions.each do |k3s|
+          puts k3s.version
+        end
+      else
+        rows = []
+        Civo::Kubernetes.versions.each do |k3s|
+          if k3s.default
+            rows << [k3s.version, k3s.type, "<====="]
+          else
+            rows << [k3s.version, k3s.type, ""]
+          end
+        end
+        puts Terminal::Table.new headings: ['Version', 'Type', 'Default'], rows: rows
+      end
+    rescue Flexirest::HTTPForbiddenClientException
+      reject_user_access
+    end
+    map "version" => "versions", "v" => "versions"
+
     desc "show ID/NAME", "show a Kubernetes cluster by ID or name"
     def show(id)
       CivoCLI::Config.set_api_auth
       rows = []
       cluster = Finder.detect_cluster(id)
+      upgrade_available = false
 
       puts "                ID : #{cluster.id}"
       puts "              Name : #{cluster.name}"
@@ -39,9 +75,26 @@ module CivoCLI
       else
         puts "            Status : #{cluster.status.colorize(:red)}"
       end
-      puts "           Version : #{cluster.kubernetes_version}"
+
+      if cluster.kubernetes_version == "development"
+        puts "           Version : Development"
+      else
+        latest_version = get_latest_k3s_version
+        if Gem::Version.new(latest_version) > Gem::Version.new(cluster.kubernetes_version)
+          puts "           Version : " + "#{cluster.kubernetes_version} *".colorize(:red)
+          upgrade_available = true
+        else
+          puts "           Version : #{cluster.kubernetes_version}"
+        end
+      end
+
       puts "      API Endpoint : #{cluster.api_endpoint}"
       puts "      DNS A record : #{cluster.id}.k8s.civo.com"
+      puts "                     *.#{cluster.id}.k8s.civo.com"
+
+      if upgrade_available
+        puts "\n* An upgrade to v#{latest_version} is available, use - civo k3s upgrade ID - to upgrade it".colorize(:red)
+      end
 
       puts ""
       puts "Nodes:"
@@ -204,6 +257,23 @@ module CivoCLI
       exit 1
     end
 
+    desc "upgrade ID/NAME [--version]", "upgrade Kubernetes cluster's k3s version"
+    option :version
+    long_desc <<-LONGDESC
+      Use --name=version to specify the new version (or leave blank to automatically use latest)
+    LONGDESC
+    def upgrade(id)
+      CivoCLI::Config.set_api_auth
+      cluster = Finder.detect_cluster(id)
+
+      version = get_latest_k3s_version(options[:version])
+      Civo::Kubernetes.update(id: cluster.id, version: version)
+      puts "Kubernetes cluster #{cluster.name.colorize(:green)} is upgrading to #{version.colorize(:green)}"
+    rescue Flexirest::HTTPException => e
+      puts e.result.reason.colorize(:red)
+      exit 1
+    end
+
     desc "scale ID/NAME [--nodes]", "rescale the Kubernetes cluster to a new node count"
     option :nodes
     long_desc <<-LONGDESC
@@ -240,19 +310,32 @@ module CivoCLI
 
     private
 
+    def windows?
+      RUBY_PLATFORM =~ /win32/ || RUBY_PLATFORM =~ /mingw/
+    end
+
     def save_config(cluster)
       config_file_exists = File.exist?("#{ENV["HOME"]}/.kube/config")
       tempfile = Tempfile.new('import_kubeconfig')
       begin
         tempfile.write(cluster.kubeconfig)
         tempfile.size
-        if options[:switch]
-          result = `KUBECONFIG=#{tempfile.path}:~/.kube/config kubectl config view --flatten`
+        if windows?
+          home = `echo %HOMEPATH%`.chomp
+          if options[:switch]
+            ENV['KUBECONFIG'] = "#{tempfile.path};#{home}\\.kube\\config"
+          else
+            ENV['KUBECONFIG'] = "#{home}\\.kube\\config;#{tempfile.path}"
+          end
+          result = `kubectl config view --flatten`
         else
-          result = `KUBECONFIG=~/.kube/config:#{tempfile.path} kubectl config view --flatten`
+          if options[:switch]
+            result = `KUBECONFIG=#{tempfile.path}:~/.kube/config kubectl config view --flatten`
+          else
+            result = `KUBECONFIG=~/.kube/config:#{tempfile.path} kubectl config view --flatten`
+          end
         end
-        Dir.mkdir("#{ENV['HOME']}/.kube/") unless Dir.exist?("#{ENV["HOME"]}/.kube/")
-        File.write("#{ENV['HOME']}/.kube/config", result)
+        write_file(result)
         if config_file_exists && options[:switch]
           puts "Merged".colorize(:green) + " config into ~/.kube/config and switched context to #{cluster.name}"
         elsif config_file_exists && !options[:switch]
@@ -266,9 +349,30 @@ module CivoCLI
       end
     end
 
+    def write_file(result)
+      Dir.mkdir("#{ENV['HOME']}/.kube/") unless Dir.exist?("#{ENV["HOME"]}/.kube/")
+      File.write("#{ENV['HOME']}/.kube/config", result)
+    end
+
     def reject_user_access
       puts "Sorry, this functionality is currently in closed beta and not available to the public yet"
       exit(1)
+    end
+
+    def get_latest_k3s_version(version = nil)
+      available_versions = Civo::Kubernetes.versions
+      if version
+        if available_versions.detect {|v| v.version == version}
+          version
+        else
+          puts "Version #{version.colorize(:red)} is not available for upgrading"
+          exit(1)
+        end
+      else
+        k3s = available_versions.detect {|v| v.default}
+        k3s ||= available_versions.first
+        k3s.version
+      end
     end
   end
 end

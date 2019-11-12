@@ -3,6 +3,48 @@ All notable changes to the Civo CLI will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.5] - 2019-11-12
+### Fixed
+- Support for `development` version k3s clusters when showing the details
+
+## [0.5.4] - 2019-11-01
+### Added
+- New `--quiet`/`-q` flag for instance creation to not display the spinner and be so verbose during instance creation
+
+## [0.5.3] - 2019-11-01
+### Added
+- New feature, you can now specify a script to be run from the cloud-init process (it's saved on the instance as `/usr/local/bin/civo-user-init-script` with root ownership and only root permissions). `civo instance create --script=~/code/myscript.sh`
+
+## [0.5.2] - 2019-11-01
+### Fixed
+- Updated bundler dependency requirements to allow for new versions of bundler (v. 2 onwards)
+
+## [0.5.1] - 2019-10-24
+### Fixed
+- `civo application show SOMETHING` crashed if it had no dependencies.
+
+## [0.5.0] - 2019-10-23
+### Fixed
+- `civo k3s ls` and `civo k3s show` shouldn't show a recommended upgrade to a non-default version.
+
+## [0.4.9] - 2019-10-23
+### Changed
+- `civo k3s versions` now shows which version will be installed by default.
+
+## [0.4.8] - 2019-10-17
+### Fixed
+- `civo k3s ls` was always warning about an upgrade available.
+
+## [0.4.7] - 2019-10-17
+### Added
+- Ability to upgrade an existing k3s cluster `civo k3s upgrade`.
+
+## [0.4.6] - 2019-10-08
+### Fixed
+- Behaviour of Kubernetes cluster configuration saving in Windows
+### Added
+- Help text for some common aliases when running `civo help`.
+
 ## [0.4.5] - 2019-09-30
 ### Changed
 - Set default for reboot to be a soft reboot, and made hard-reboot an optional extra command

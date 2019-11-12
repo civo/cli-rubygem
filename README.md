@@ -11,6 +11,7 @@ Civo CLI is a tool to manage your [Civo.com](https://www.civo.com) account from 
 - [API Keys](#api-keys)
 - [Instances](#instances)
 - [Kubernetes clusters](#kubernetes-clusters)
+- [Kubernetes applications](#kubernetes-applications)
 - [Domains and Domain Records](#domains-and-domain-records)
 - [Firewalls](#firewalls)
 - [Networks](#networks)
@@ -273,7 +274,7 @@ $ civo kubernetes list
 +--------------------------------------+------+---------+-----------+--------+
 ```
 
-#### Create a cluster
+#### Create a cluster
 You can create an instance by running `civo kubernetes create` with a cluster name parameter, as well as any options you provide:
 
 * `size` -  The size of nodes to create, from the current list of sizes  available at [`civo sizes`](#sizes). Defaults to `g2.medium`.
@@ -299,9 +300,11 @@ To output a cluster's configuration information, you can invoke `civo kubernetes
 
 You can save a cluster's configuration to your local `~/.kube/config` file. This requires `kubectl` to be installed. Usage:
 ```
-civo kubernetes save my-first-cluster
+civo kubernetes config -s my-first-cluster
 Saved config to ~/.kube/config
 ```
+
+If you already have a `~/.kube/config` file, any cluster configuration that is saved will be merged to the file, allowing you to switch contexts at will.
 
 #### Renaming the cluster
 Although the name isn't used anywhere except for in the list of clusters (e.g. it's not in any way written in to the cluster), if you wish to rename a cluster you can do so with:
@@ -319,6 +322,85 @@ civo kubernetes remove my-first-cluster
 Removing Kubernetes cluster my-first-cluster
 ```
 
+## Kubernetes Applications
+#### Introduction
+You can install applications from the [Applications Marketplace](https://github.com/civo/kubernetes-marketplace/) through the command-line interface. The installation depends on if you are creating a new cluster or adding applications to an existing cluster.
+
+#### Listing Available Applications
+To get an up-to-date list of available applications on the Marketplace, run `civo apps list`. At the time of writing, the list looked like this:
+```
++---------------------+------------+--------------+-----------------+--------------+
+| Name                | Version    | Category     | Plans           | Dependencies |
++---------------------+------------+--------------+-----------------+--------------+
+| cert-manager        | v0.10.0    | architecture | Not applicable  | Helm         |
+| Helm                | 2.14.3     | management   | Not applicable  |              |
+| Linkerd             | 2.5.0      | architecture | Not applicable  |              |
+| Longhorn            | 0.5.0      | storage      | Not applicable  |              |
+| Maesh               | Latest     | architecture | Not applicable  | Helm         |
+| MariaDB             | 10.4.7     | database     | 5GB, 10GB, 20GB | Longhorn     |
+| metrics-server      | Latest     | architecture | Not applicable  | Helm         |
+| MinIO               | 2019-08-29 | storage      | 5GB, 10GB, 20GB | Longhorn     |
+| MongoDB             | 4.2.0      | database     | 5GB, 10GB, 20GB | Longhorn     |
+| OpenFaaS            | 0.18.0     | architecture | Not applicable  | Helm         |
+| PostgreSQL          | 11.5       | database     | 5GB, 10GB, 20GB | Longhorn     |
+| prometheus-operator | 0.32.0     | monitoring   | Not applicable  | Helm         |
+| Redis               | 3.2        | database     | Not applicable  |              |
+| Traefik             | (default)  | architecture | Not applicable  |              |
++---------------------+------------+--------------+-----------------+--------------+
+```
+
+
+#### Installing Applications Onto a New Cluster
+To specify applications to install onto a new cluster, list them at cluster creation by specifying their `name` from the list above:
+```
+$ civo kubernetes create apps-demo-cluster --nodes=2 --applications=Redis,Linkerd
+Created Kubernetes cluster apps-demo-cluster.
+```
+Now, if you take a look at the cluster's details, you will see the newly-installed applications listed:
+```
+$ civo kubernetes show apps-demo
+                ID : 1199efbe-e2a5-4d25-a32f-0b7aa50082b2
+              Name : apps-demo-cluster
+           # Nodes : 2
+              Size : g2.medium
+            Status : ACTIVE
+           Version : 0.8.1
+      API Endpoint : https://[Cluster-IP]:6443
+      DNS A record : 1199efbe-e2a5-4d25-a32f-0b7aa50082b2.k8s.civo.com
+
+Nodes:
++------------------+----------------+--------+
+| Name             | IP             | Status |
++------------------+----------------+--------+
+| kube-master-1e91 |      (IP)      | ACTIVE |
+| kube-node-e678   |      (IP)      | ACTIVE |
++------------------+----------------+--------+
+
+Installed marketplace applications:
++---------+-----------+-----------+--------------+
+| Name    | Version   | Installed | Category     |
++---------+-----------+-----------+--------------+
+| Traefik | (default) | Yes       | architecture |
+| Linkerd | 2.5.0     | Yes       | architecture |
+| Redis   | 3.2       | Yes       | database     |
++---------+-----------+-----------+--------------+
+```
+
+#### Installing Applications to an Existing Cluster
+If you want to add a new application to an existing cluster, you can do so by running the `civo applications` command specifying the cluster and the app(s) you wish to add:
+```
+$ civo applications add Longhorn --cluster=apps-demo
+Added Longhorn 0.5.0 to Kubernetes cluster apps-demo-cluster
+```
+
+#### Installing Applications That Require Plans
+Some applications, specifically database apps, require a storage plan that you can specify at installation time from the list of plan options. If you do not provide a plan for an application that requires one, the CLI will notify you and suggest a default size:
+```
+$ civo applications add mariadb --cluster=apps-demo
+You requested to add MariaDB but didn't select a plan. Please choose one... (5GB, 10GB, 20GB) [5GB]: 10GB
+Thank you, next time you could use "MariaDB:10GB" to choose automatically
+Added MariaDB 10.4.7 to Kubernetes cluster apps-demo-cluster
+```
 
 ## Domains and Domain Records
 #### Introduction

@@ -10,6 +10,7 @@ module CivoCLI
     end
 
     def initialize(data = {}, &block)
+      @quiet = data.delete(:quiet) || false
       @data = data
       @spinner_frame = 0
       @counter = 20
@@ -31,10 +32,10 @@ module CivoCLI
     end
 
     def spin
-      print "\033[?25l"
+      print "\033[?25l" unless @quiet
       while(@total > 0) do
         sleep(DELAY)
-        print SPINNER_SHAPES[@spinner_frame] + "\b"
+        print SPINNER_SHAPES[@spinner_frame] + "\b" unless @quiet
         @spinner_frame += 1
         @spinner_frame = 0 if @spinner_frame == SPINNER_SHAPES.length
         @counter -= 1
@@ -44,17 +45,17 @@ module CivoCLI
         @counter = 20
         if result = @block.call(self)
           self.data[:result] = result
-          print "\033[?25h"
+          print "\033[?25h" unless @quiet
           return self
         end
       end
 
-      print "\033[?25h"
+      print "\033[?25h" unless @quiet
     rescue Interrupt
       print "\b\b" + "Exiting.\n"
       exit 1
     ensure
-      print "\033[?25h"
+      print "\033[?25h" unless @quiet
     end
   end
 end
