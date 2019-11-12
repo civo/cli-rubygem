@@ -38,13 +38,11 @@ module CivoCLI
 
     desc "current [NAME]", "Either return the name of the current API key or set the current key to be the one with a label of 'NAME'"
     def current(name = nil)
-      if name.nil?
-        currentkey = CivoCLI::Config.get_current_apikey_name
-        if currentkey
+      currentkey = CivoCLI::Config.get_current_apikey_name
+      if name.nil? && currentkey
           puts "The current API Key is #{currentkey.colorize(:green)}"
-        else
+      elsif name.nil? && !currentkey
           puts "No current API Key set".colorize(:red)
-        end
       else
         keys = CivoCLI::Config.get_apikeys
         if keys.keys.include?(name)
