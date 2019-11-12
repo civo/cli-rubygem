@@ -21,6 +21,7 @@ module CivoCLI
     def add(name, key)
       CivoCLI::Config.set_apikey(name, key)
       puts "Saved the API Key #{key.colorize(:green)} as #{name.colorize(:green)}"
+      current(name)
     end
 
     desc "remove NAME", "Remove the API Key with a label of 'NAME'"
