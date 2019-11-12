@@ -76,12 +76,16 @@ module CivoCLI
         puts "            Status : #{cluster.status.colorize(:red)}"
       end
 
-      latest_version = get_latest_k3s_version
-      if Gem::Version.new(latest_version) > Gem::Version.new(cluster.kubernetes_version)
-        puts "           Version : " + "#{cluster.kubernetes_version} *".colorize(:red)
-        upgrade_available = true
+      if cluster.kubernetes_version == "development"
+        puts "           Version : Development"
       else
-        puts "           Version : #{cluster.kubernetes_version}"
+        latest_version = get_latest_k3s_version
+        if Gem::Version.new(latest_version) > Gem::Version.new(cluster.kubernetes_version)
+          puts "           Version : " + "#{cluster.kubernetes_version} *".colorize(:red)
+          upgrade_available = true
+        else
+          puts "           Version : #{cluster.kubernetes_version}"
+        end
       end
 
       puts "      API Endpoint : #{cluster.api_endpoint}"
