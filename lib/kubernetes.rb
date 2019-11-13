@@ -16,10 +16,15 @@ module CivoCLI
         rows = []
         Civo::Kubernetes.all.items.each do |cluster|
           version = cluster.kubernetes_version
-          if Gem::Version.new(latest_version) > Gem::Version.new(version)
-            upgrade_available = true
-            version = "#{version} *".colorize(:red)
+
+          if cluster.kubernetes_version != "development"
+            latest_version = get_latest_k3s_version
+            if Gem::Version.new(latest_version) > Gem::Version.new(version)
+              upgrade_available = true
+              version = "#{version} *".colorize(:red)
+            end
           end
+
           rows << [cluster.id, cluster.name, cluster.num_target_nodes, cluster.target_nodes_size, version, cluster.status]
         end
         puts Terminal::Table.new headings: ['ID', 'Name', '# Nodes', 'Size', 'Version', 'Status'], rows: rows
@@ -164,6 +169,7 @@ module CivoCLI
     option :save, type: :boolean
     option :switch, type: :boolean
     option :applications, type: :string, aliases: %w{apps app application}
+    option :remove_applications, type: :string
     long_desc <<-LONGDESC
       Create a new Kubernetes cluster with name (randomly assigned if blank), instance size (default: g2.medium),
       \x5\x5Optional parameters are as follows:
@@ -171,6 +177,7 @@ module CivoCLI
       \x5 --nodes=<count> - '3' if blank
       \x5 --version=<version> - our latest k3s version if blank
       \x5 --applications=name1,name2 - optional, use names shown by running `civo applications`
+      \x5 --remove-applications=name1,name2 - optional, remove default application names shown by running `civo applications`
       \x5 --wait - wait for build to complete and show status. Off by default.
       \x5 --save - save resulting configuration to ~/.kube/config (requires kubectl and the --wait option)
       \x5 --switch - switch context to newly-created cluster (requires kubectl and the --wait and --save options, as well as existing kubeconfig file)
@@ -205,6 +212,14 @@ module CivoCLI
         else
           applications << app.name
         end
+      end
+
+      (options[:remove_applications] || "").split(",").map(&:chomp).each do |name|
+        app = Finder.detect_app(name)
+        unless app.default # Not a default application, no need to remove
+          next
+        end
+        applications << "-#{app.name}"
       end
 
       @cluster = Civo::Kubernetes.create(name: name, target_nodes_size: options[:size], num_target_nodes: options[:nodes], applications: applications.join(","), version: options[:version])
