@@ -8,6 +8,7 @@ Civo CLI is a tool to manage your [Civo.com](https://www.civo.com) account from 
 ## Table of contents
 - [Introduction](#introduction)
 - [Set-Up](#set-up) 
+- [Docker Usage](#docker-usage) 
 - [API Keys](#api-keys)
 - [Instances](#instances)
 - [Kubernetes clusters](#kubernetes-clusters)
@@ -45,6 +46,30 @@ To run the tool, simply run `civo` with your chosen options. You can find contex
 `civo instance help`,
 `civo instance help create`
 and so on. The main components of Civo CLI are outlined in the following sections.
+
+## Docker Usage
+The civo cli utilty can also run within a docker container, which avoids the need to maintain a Ruby environment on the main system.  To build the container
+
+```sh
+cd docker/
+docker build . -t civo:latest
+```
+
+To run, you generally will want to map the API key for presistence.
+
+```
+touch $HOME/.civo.json
+docker run -it --rm -v $HOME/.civo.json:/home/user/.civo.json civo
+```
+
+To make usage easier, an alias is recommended.  Here's an example how to set one, and using the docker image:
+```
+alias dcivo="docker run -it --rm -v $HOME/.civo.json:/home/user/.civo.json civo"
+dcivo sshkey list
+dcivo instance list
+dcivo instance create --size g2.xsmall
+dcivo k8s list
+```
 
 ## API Keys
 #### Introduction
