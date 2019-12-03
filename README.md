@@ -337,6 +337,13 @@ civo kubernetes rename my-first-cluster --name="Production"
 Kubernetes cluster my-first-cluster is now named Production
 ```
 
+#### Starting a cluster without default applications
+By default, `traefik` is bundled in with `k3s` to act as the ingress controller. If you want to set up a cluster without `traefik`, you can use the `remove-applications` option in the creation command to start a cluster without it:
+
+```
+civo kubernetes create --remove-applications=traefik --nodes=2 --wait --save
+```
+
 #### Removing the cluster
 If you're completely finished with a cluster you can delete it with:
 
