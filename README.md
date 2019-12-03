@@ -48,7 +48,7 @@ To run the tool, simply run `civo` with your chosen options. You can find contex
 and so on. The main components of Civo CLI are outlined in the following sections.
 
 ## Docker Usage
-The civo CLI utilty can also run within a Docker container, which avoids the need to maintain a Ruby environment on the main system.
+Civo's CLI utilty can also run within a Docker container, which avoids the need to maintain a Ruby environment on the main system.
 
 To run, you generally will want to map the API key for presistence.
 
@@ -61,6 +61,7 @@ To make usage easier, an alias is recommended.  Here's an example how to set one
 
 ```
 alias civo="docker run -it --rm -v $HOME/.civo.json:/home/user/.civo.json civo/cli:latest"
+# Maybe put the above line in ~/.bash_profile or ~/.zshrc
 civo sshkey list
 civo instance list
 civo instance create --size g2.xsmall
