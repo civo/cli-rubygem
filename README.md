@@ -7,8 +7,8 @@ Civo CLI is a tool to manage your [Civo.com](https://www.civo.com) account from 
 
 ## Table of contents
 - [Introduction](#introduction)
-- [Set-Up](#set-up) 
-- [Docker Usage](#docker-usage) 
+- [Set-Up](#set-up)
+- [Docker Usage](#docker-usage)
 - [API Keys](#api-keys)
 - [Instances](#instances)
 - [Kubernetes clusters](#kubernetes-clusters)
@@ -48,36 +48,32 @@ To run the tool, simply run `civo` with your chosen options. You can find contex
 and so on. The main components of Civo CLI are outlined in the following sections.
 
 ## Docker Usage
-The civo cli utilty can also run within a docker container, which avoids the need to maintain a Ruby environment on the main system.  To build the container
-
-```sh
-cd docker/
-docker build . -t civo:latest
-```
+The civo CLI utilty can also run within a Docker container, which avoids the need to maintain a Ruby environment on the main system.
 
 To run, you generally will want to map the API key for presistence.
 
 ```
 touch $HOME/.civo.json
-docker run -it --rm -v $HOME/.civo.json:/home/user/.civo.json civo
+docker run -it --rm -v $HOME/.civo.json:/home/user/.civo.json civo/cli:latest
 ```
 
-To make usage easier, an alias is recommended.  Here's an example how to set one, and using the docker image:
+To make usage easier, an alias is recommended.  Here's an example how to set one to the same command as would be used if installed directly on the system, and using the Docker image:
+
 ```
-alias dcivo="docker run -it --rm -v $HOME/.civo.json:/home/user/.civo.json civo"
-dcivo sshkey list
-dcivo instance list
-dcivo instance create --size g2.xsmall
-dcivo k8s list
+alias civo="docker run -it --rm -v $HOME/.civo.json:/home/user/.civo.json civo/cli:latest"
+civo sshkey list
+civo instance list
+civo instance create --size g2.xsmall
+civo k8s list
 ```
 
 ## API Keys
 #### Introduction
-In order to use the command-line tool, you will need to authenticate yourself to the Civo API using a special key. You can find an automatically-generated API key or regenerate a new key at [https://www.civo.com/api](https://www.civo.com/api). 
+In order to use the command-line tool, you will need to authenticate yourself to the Civo API using a special key. You can find an automatically-generated API key or regenerate a new key at [https://www.civo.com/api](https://www.civo.com/api).
 
 #### Adding a current API Key to your account
 You can add the API Key to the CLI tool through the API Keys command.
-`civo apikey add apikey_name apikey` such as: 
+`civo apikey add apikey_name apikey` such as:
 
 ```
 $ civo apikey add Demo_Test_Key DAb75oyqVeaE7BI6Aa74FaRSP0E2tMZXkDWLC9wNQdcpGfH51r
@@ -88,7 +84,7 @@ As you can have multiple API keys stored to handle multiple accounts, you will n
 $ civo apikey current Demo_Test_Key
   The current API Key is now Demo_Test_Key
 ```
-#### Managing and listing API keys 
+#### Managing and listing API keys
 You can list all stored API keys in your configuration by invoking `civo apikey list` or remove one by name by using `civo apikey remove apikey_name`.
 
 ## Instances
@@ -132,7 +128,7 @@ $ civo instance show api-demo.test
 
 ----------------------------- NOTES -----------------------------
 
- 
+
 ```
 
 You will be able to see the instance's details by running `civo instance show api-demo.test` as above.
@@ -259,7 +255,7 @@ Provided you have room in your Civo quota, you can upgrade any instance up in si
 ```
 $ civo instance upgrade api-demo-renamed.test g2.medium
  Resizing api-demo-renamed.test to g2.medium. Use 'civo instance show api-demo-renamed.test' to see the current status.
-        
+
 $ civo instance show api-demo-renamed.test
                 ID : 715f95d1-3cee-4a3c-8759-f9b49eec34c4
           Hostname : api-demo-renamed.test
@@ -472,7 +468,7 @@ $ civo domainrecord create civoclidemo.xyz mx 10.0.0.1 -p=10 -t=1000
 
 #<Civo::DnsRecord id: "2079e6e1-0633-4cd0-b883-e82a8991a91a", created_at: "2019-06-17 12:38:02", updated_at: "2019-06-17 12:38:02", account_id: nil, domain_id: "418181b2-fcd2-46a2-ba7f-c843c331e79b", name: "@", value: "10.0.0.1", type: "mx", priority: 10, ttl: 1000, ETag: "187cf7e849ce53336a889b2bde7ed061", Status: 200>
 Created MX record civoclidemo.xyz for civoclidemo.xyz with a TTL of 1000 seconds and with a priority of 10 with ID 2079e6e1-0633-4cd0-b883-e82a8991a91a
-``` 
+```
 #### Listing DNS Records
 You can get an overview of all records you have created for a particular domain by requesting `civo domainrecord list domain.name`:
 ```
@@ -507,7 +503,7 @@ You will then be able to **configure rules** that allow connections to and from 
 * `start_port` - The starting port that the rule applies to. Required.
 * `end_port` - The end of the port range that the rule applies to. Optional; if not specified, the rule will only apply to `start_port` specified.
 * `protocol` - The protocol for the rule (`TCP, UDP, ICMP`). If not provided, defaults to `TCP`.
-* `cidr` - The IP address of the other end (i.e. not your instance) to affect, or a valid network CIDR. Defaults to being globally applied, i.e. `0.0.0.0/0`. 
+* `cidr` - The IP address of the other end (i.e. not your instance) to affect, or a valid network CIDR. Defaults to being globally applied, i.e. `0.0.0.0/0`.
 * `direction` -  Will this rule affect `inbound` or `outbound` traffic? Defaults to `inbound`.
 * `label` - A label for your own reference for this rule. Optional.
 
@@ -546,7 +542,7 @@ You can remove a firewall rule simply by calling `civo firewall delete_rule fire
 ```
 $ civo firewall delete_rule 09f8d85b-0cf1-4dcf-a472-ba247fb4be21 4070f87b-e6c6-4208-91c5-fc4bc72c1587
         Removed Firewall rule 4070f87b-e6c6-4208-91c5-fc4bc72c1587
-        
+
 $ civo firewall list_rules 09f8d85b-0cf1-4dcf-a472-ba247fb4be21
 +-------+----------+------------+----------+------+-------+
 | Firewall rules for 09f8d85b-0cf1-4dcf-a472-ba247fb4be21 |
@@ -590,7 +586,7 @@ Removed the network cli-demo with ID 74b69006-ea59-46a0-96c4-63f5bfa290e1
 
 ## Load Balancers
 #### Introduction
-Civo supports load balancing for your instances, allowing you to spread web traffic between them to maximise availability. You can view details about load balancers you may have running, create new oness, update information and even remove them from the command line. 
+Civo supports load balancing for your instances, allowing you to spread web traffic between them to maximise availability. You can view details about load balancers you may have running, create new oness, update information and even remove them from the command line.
 
 #### Viewing Load Balancers
 You can list currently-active load balancers by calling `civo loadbalancer list`. This will draw a table detailing the unique ID, hostname, protocol, port, TLS certificate information, backend check path and connection information.
@@ -767,7 +763,7 @@ Detailed information about a template can be obtained via the CLI using `civo te
 #### Creating a Template
 You can convert a **bootable** Volume (virtual disk) of an instance, or alternatively use an existing image ID, to create a template. The options for the `civo template create` command are:
 ```
-Options: 
+Options:
   -c, [--cloud-init-file=CLOUD_INIT_FILENAME] # The filename of a file to be used as user-data/cloud-init
   -d, [--description=DESCRIPTION] # A full/long multiline description (optional)
   -i, [--image-id=IMAGE_ID] # The glance ID of the base filesystem image

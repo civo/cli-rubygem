@@ -1,15 +1,12 @@
 # Civo CLI in Docker
 
-Build a docker container embedded with the latest civo command.  Note that it does NOT yet build from source;
-it simply pulls the latest civo cli from RubyGems.  Usage is in the main repo's README.  The docker that builds
+Build a Docker container embedded with the latest `civo` command.  Note that it does NOT yet build from source;
+it simply pulls the latest Civo CLI from RubyGems.  Usage is in the main repo's README.  The Docker that builds
 from source is a work in progress and available at https://github.com/ssmiller25/cli/tree/dockerbuild
-
-##
-
 
 ## Pushing to Civo's official DockerHub
 
-From the repository build it with the current version and "latest" tags:
+For Civo staff only: from the cloned repository, build it with the current version and "latest" tags:
 
 ```
 docker build -t civo/cli:latest -f docker/Dockerfile .
