@@ -301,6 +301,7 @@ You can create an instance by running `civo kubernetes create` with a cluster na
 
 * `size` -  The size of nodes to create, from the current list of sizes  available at [`civo sizes`](#sizes). Defaults to `g2.medium`.
 * `nodes` -  The number of nodes to create (the master also acts as a node).
+* `version` - the `k3s` version to use on the cluster. Defaults to the latest.
 * `wait` - a simple flag (e.g. `--wait`) that will cause the CLI to spin and wait for the cluster to be `ACTIVE`.
 * `save` - a flag used in conjunction with `--wait` (i.e. `--wait --save`) to save the configuration to your local `~/.kube/config` file.
 
