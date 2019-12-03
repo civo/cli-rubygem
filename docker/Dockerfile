@@ -1,6 +1,5 @@
-FROM ruby:slim-buster
+FROM ruby:alpine
 MAINTAINER Steve Miller <me@r15cookie.com>
 RUN gem install civo_cli
-RUN useradd -m user
+RUN adduser -S user
 USER user
-ENTRYPOINT ["civo"]
