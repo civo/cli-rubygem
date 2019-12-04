@@ -50,7 +50,7 @@ and so on. The main components of Civo CLI are outlined in the following section
 ## Docker Usage
 Civo's CLI utilty can also run within a Docker container, which avoids the need to maintain a Ruby environment on the main system.
 
-To run, you generally will want to map the API key for presistence.
+To run, you generally will want to map the API key for persistence.
 
 ```
 touch $HOME/.civo.json
@@ -80,7 +80,7 @@ You can add the API Key to the CLI tool through the API Keys command.
 $ civo apikey add Demo_Test_Key DAb75oyqVeaE7BI6Aa74FaRSP0E2tMZXkDWLC9wNQdcpGfH51r
        Saved the API Key DAb75oyqVeaE7BI6Aa74FaRSP0E2tMZXkDWLC9wNQdcpGfH51r as Demo_Test_Key
 ```
-As you can have multiple API keys stored to handle multiple accounts, you will need to tell which key the tool is to authenticate with `civo apikey current [apikey_name]`. This sets your chosen API key as the default key to use for any subsequent commands:
+As you can have multiple API keys stored to handle multiple accounts, you will need to tell which key the tool should use to authenticate with `civo apikey current [apikey_name]`. This sets your chosen API key as the default key to use for any subsequent commands:
 ```
 $ civo apikey current Demo_Test_Key
   The current API Key is now Demo_Test_Key
@@ -354,9 +354,9 @@ Removing Kubernetes cluster my-first-cluster
 
 ## Kubernetes Applications
 #### Introduction
-You can install applications from the [Applications Marketplace](https://github.com/civo/kubernetes-marketplace/) through the command-line interface. The installation depends on if you are creating a new cluster or adding applications to an existing cluster.
+You can install applications from the [Applications Marketplace](https://github.com/civo/kubernetes-marketplace/) through the command-line interface. The installation depends on whether you are creating a new cluster or adding applications to an existing cluster.
 
-#### Listing Available Applications
+#### Listing Available Applications
 To get an up-to-date list of available applications on the Marketplace, run `civo apps list`. At the time of writing, the list looked like this:
 ```
 +---------------------+------------+--------------+-----------------+--------------+
