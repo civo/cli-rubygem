@@ -51,4 +51,5 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency "bundler", ">= 1.17"
   spec.add_runtime_dependency 'civo', ">= 1.2.9"
   spec.add_runtime_dependency 'json'
+  spec.add_runtime_dependency 'activesupport', ">= 6.0.0"
 end
