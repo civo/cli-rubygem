@@ -285,7 +285,7 @@ Please note that resizing can take a few minutes.
 *IMPORTANT:* Kubernetes is in closed-access only at the moment, during testing. The endpoints here will be rejected unless you are one of the closed set of users that can launch them.
 
 #### List clusters
-To see your created domains, simply call `civo kubernetes list`:
+To see your created clusters, simply call `civo kubernetes list`:
 
 ```
 $ civo kubernetes list
@@ -297,7 +297,7 @@ $ civo kubernetes list
 ```
 
 #### Create a cluster
-You can create an instance by running `civo kubernetes create` with a cluster name parameter, as well as any options you provide:
+You can create a cluster by running `civo kubernetes create` with a cluster name parameter, as well as any options you provide:
 
 * `size` -  The size of nodes to create, from the current list of sizes  available at [`civo sizes`](#sizes). Defaults to `g2.medium`.
 * `nodes` -  The number of nodes to create (the master also acts as a node).
