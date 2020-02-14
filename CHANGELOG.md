@@ -3,6 +3,10 @@ All notable changes to the Civo CLI will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.8] - 2020-02-14
+### Changed
+- Fix error with k3s versioning having plus signs
+
 ## [0.5.7] - 2019-12-04
 ### Changed
 - Set a minimum version of activesupport to fix https://github.com/civo/cli/issues/51 (thanks to Dr Nic Williams for the bug report)
