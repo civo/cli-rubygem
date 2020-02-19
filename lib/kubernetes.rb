@@ -18,8 +18,8 @@ module CivoCLI
           version = cluster.kubernetes_version
 
           if cluster.kubernetes_version != "development"
-            latest_version = get_latest_k3s_version.gsub!(/[+]/, "")
-            if Gem::Version.new(latest_version) > Gem::Version.new(version)
+            latest_version = get_latest_k3s_version
+            if Gem::Version.new(latest_version.gsub(/[+]/, "")) > Gem::Version.new(version.gsub(/[+]/, ""))
               upgrade_available = true
               version = "#{version} *".colorize(:red)
             end
@@ -85,7 +85,7 @@ module CivoCLI
         puts "           Version : Development"
       else
         latest_version = get_latest_k3s_version
-        if Gem::Version.new(latest_version) > Gem::Version.new(cluster.kubernetes_version)
+        if Gem::Version.new(latest_version.gsub(/[+]/, "")) > Gem::Version.new(cluster.kubernetes_version.gsub(/[+]/, ""))
           puts "           Version : " + "#{cluster.kubernetes_version} *".colorize(:red)
           upgrade_available = true
         else
@@ -280,8 +280,7 @@ module CivoCLI
     def upgrade(id)
       CivoCLI::Config.set_api_auth
       cluster = Finder.detect_cluster(id)
-
-      version = get_latest_k3s_version(options[:version])
+      version = get_latest_k3s_version(options[:version]).gsub(/[+]/,"")
       Civo::Kubernetes.update(id: cluster.id, version: version)
       puts "Kubernetes cluster #{cluster.name.colorize(:green)} is upgrading to #{version.colorize(:green)}"
     rescue Flexirest::HTTPException => e
@@ -386,7 +385,7 @@ module CivoCLI
       else
         k3s = available_versions.detect {|v| v.default}
         k3s ||= available_versions.first
-        k3s.version.gsub(/[+]/, "")
+        k3s.version
       end
     end
   end
