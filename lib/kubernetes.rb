@@ -330,32 +330,33 @@ module CivoCLI
     end
 
     def save_config(cluster)
-      config_file_exists = File.exist?("#{ENV["HOME"]}/.kube/config")
+      config_file_exists = File.exist?(ENV['KUBECONFIG'] || "#{Dir.home}/.kube/config")
       tempfile = Tempfile.new('import_kubeconfig')
       begin
         tempfile.write(cluster.kubeconfig)
         tempfile.size
         if windows?
           if options[:switch]
-            ENV['KUBECONFIG'] = "#{tempfile.path};#{Dir.home}\\.kube\\config"
+            ENV['KUBECONFIG'] = "#{tempfile.path};" + (ENV['KUBECONFIG'] ? ENV['KUBECONFIG'] : "#{Dir.home}\\.kube\\config")
           else
-            ENV['KUBECONFIG'] = "#{Dir.home}\\.kube\\config;#{tempfile.path}"
+            ENV['KUBECONFIG'] = (ENV['KUBECONFIG'] ? ENV['KUBECONFIG'] : "#{Dir.home}\\.kube\\config") + ";#{tempfile.path}"
           end
           result = `kubectl config view --flatten`
         else
           if options[:switch]
-            result = `KUBECONFIG=#{tempfile.path}:~/.kube/config kubectl config view --flatten`
+            result = `KUBECONFIG=#{tempfile.path}:#{ENV['KUBECONFIG'] || "~/.kube/config"} kubectl config view --flatten`
           else
-            result = `KUBECONFIG=~/.kube/config:#{tempfile.path} kubectl config view --flatten`
+            puts "KUBECONFIG=#{ENV['KUBECONFIG'] || "~/.kube/config"}:#{tempfile.path} kubectl config view --flatten"
+            result = `KUBECONFIG=#{ENV['KUBECONFIG'] || "~/.kube/config"}:#{tempfile.path} kubectl config view --flatten`
           end
         end
         write_file(result)
         if config_file_exists && options[:switch]
-          puts "Merged".colorize(:green) + " config into ~/.kube/config and switched context to #{cluster.name}"
+          puts "Merged".colorize(:green) + " config into #{ENV['KUBECONFIG'] || "~/.kube/config"} and switched context to #{cluster.name}"
         elsif config_file_exists && !options[:switch]
-          puts "Merged".colorize(:green) + " config into ~/.kube/config"
+          puts "Merged".colorize(:green) + " config into #{ENV['KUBECONFIG'] || "~/.kube/config"}"
         else
-          puts "Saved".colorize(:green) + " config to ~/.kube/config"
+          puts "Saved".colorize(:green) + " config to #{ENV['KUBECONFIG'] || "~/.kube/config"}"
         end
       ensure
         tempfile.close
@@ -364,8 +365,12 @@ module CivoCLI
     end
 
     def write_file(result)
-      Dir.mkdir("#{ENV['HOME']}/.kube/") unless Dir.exist?("#{ENV["HOME"]}/.kube/")
-      File.write("#{ENV['HOME']}/.kube/config", result)
+      if ENV['KUBECONFIG']
+        File.write(ENV["KUBECONFIG"], result)
+      else
+        Dir.mkdir("#{Dir.home}/.kube/") unless Dir.exist?("#{Dir.home}/.kube/")
+        File.write("#{Dir.home}/.kube/config", result)
+      end
     end
 
     def reject_user_access

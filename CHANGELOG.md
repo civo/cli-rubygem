@@ -3,12 +3,17 @@ All notable changes to the Civo CLI will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.9] - 2020-04-08
+### Fixed
+- Issues with Windows merging KUBECONFIG should be resolved (thanks to Johannes Tegnér for the PR)
+- Allowed overriding of the KUBECONFIG file when merging (thanks to Jetchko Jekov for the suggestion)
+
 ## [0.5.8] - 2020-02-14
-### Changed
+### Fixed
 - Fix error with k3s versioning having plus signs
 
 ## [0.5.7] - 2019-12-04
-### Changed
+### Fixed
 - Set a minimum version of activesupport to fix https://github.com/civo/cli/issues/51 (thanks to Dr Nic Williams for the bug report)
 
 ## [0.5.6] - 2019-11-13
