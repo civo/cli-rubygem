@@ -336,11 +336,10 @@ module CivoCLI
         tempfile.write(cluster.kubeconfig)
         tempfile.size
         if windows?
-          home = `echo %HOMEPATH%`.chomp
           if options[:switch]
-            ENV['KUBECONFIG'] = "#{tempfile.path};#{home}\\.kube\\config"
+            ENV['KUBECONFIG'] = "#{tempfile.path};#{Dir.home}\\.kube\\config"
           else
-            ENV['KUBECONFIG'] = "#{home}\\.kube\\config;#{tempfile.path}"
+            ENV['KUBECONFIG'] = "#{Dir.home}\\.kube\\config;#{tempfile.path}"
           end
           result = `kubectl config view --flatten`
         else
