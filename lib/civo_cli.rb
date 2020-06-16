@@ -12,6 +12,10 @@ module CivoCLI
   class Error < StandardError; end
 
   class Main < Thor
+    puts "This Ruby-based CLI is officially deprecated and won't be maintained going forward"
+    puts "For a supported version please visit: https://github.com/civo/cli/releases"
+    puts
+
     check_unknown_options!
 
     desc "apikey", "manage API keys stored in the client"
@@ -93,22 +97,10 @@ module CivoCLI
 
     desc "version", "show the version of Civo CLI used"
     def version
-      gem_details = Civo::Base._request("https://rubygems.org/api/v1/gems/civo_cli.json")
-      gem_version = Gem::Version.new(gem_details.version)
-      this_version = Gem::Version.new(CivoCLI::VERSION)
-      if this_version > gem_version
-        puts "You are running an #{"unreleased v#{CivoCLI::VERSION}".colorize(:green)} of Civo CLI"
-      elsif this_version == gem_version
-        puts "You are running the #{"current".colorize(:green)} v#{CivoCLI::VERSION} of Civo CLI"
-      else
-        puts "You are running v#{CivoCLI::VERSION} of Civo CLI, but are out of date because #{"v#{gem_details.version}".colorize(:red)} is available"
-
-      end
     end
 
     desc "volume", "manage volumes"
     subcommand "volume", CivoCLI::Volume
     map "volumes" => "volume"
-
   end
 end
