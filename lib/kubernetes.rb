@@ -308,6 +308,19 @@ module CivoCLI
     end
     map "rescale" => "scale"
 
+    desc "recycle ID/NAME NODE", "recycle specified node on cluster"
+    option :node, required: true
+    def recycle(id)
+      CivoCLI::Config.set_api_auth
+      cluster = Finder.detect_cluster(id)
+        name = cluster.name
+        cluster.recycle(hostname: options[:node])
+        puts "Recycling node #{options[:node].colorize(:yellow)} of cluster #{name}"
+    rescue Flexirest::HTTPException => e
+      puts e.result.reason.colorize(:red)
+      exit 1
+    end
+
     desc "remove ID/NAME", "removes an entire Kubernetes cluster with ID/name entered (use with caution!)"
     def remove(id)
       CivoCLI::Config.set_api_auth

@@ -311,18 +311,26 @@ Created Kubernetes cluster my-first-cluster
 ```
 
 #### Scaling the cluster
-You can change the total number of nodes in the cluster (obviously 1 is the minimum) live while the cluster is running. It takes the name of the cluster (or the ID) and a parameter of `--nodes` which is the new number of nodes to run
+You can change the total number of nodes in the cluster (obviously 1 is the minimum) live while the cluster is running. It takes the name of the cluster (or the ID) and a parameter of `--nodes` which is the new number of nodes to run.
 
 ```
 civo kubernetes scale my-first-cluster --nodes=4
 Kubernetes cluster my-first-cluster will now have 4 nodes
 ```
 
+#### Recycling cluster nodes
+If you need to restart a particular node on your cluster, you can recycle it using the `civo kubernetes recycle` command. This command requires an argument, the cluster ID, as well as an option: the node ID you wish to recycle. You will be able to find out the node IDs of your cluster by using the `cluster show` command.
+
+```bash
+civo kubernetes recycle my-first-cluster --node=kube-node-e678
+Recycling node kube-node-e678 of cluster my-cluster
+```
+
 #### Viewing or Saving the cluster configuration
 To output a cluster's configuration information, you can invoke `civo kubernetes config cluster-name`. This will output the `kubeconfig` file to the screen.
 
 You can save a cluster's configuration to your local `~/.kube/config` file. This requires `kubectl` to be installed. Usage:
-```
+```bash
 civo kubernetes config -s my-first-cluster
 Saved config to ~/.kube/config
 ```
